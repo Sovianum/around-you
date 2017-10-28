@@ -1,12 +1,17 @@
 package ru.mail.park.aroundyou;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -21,13 +26,36 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView nav;
     private NeighbourFragment neighbourFragment;
     private SupportMapFragment mapFragment;
+    private List<NeighbourItem> neighbours = null;
 
     private Fragment activeFragment;
+
+    private final BroadcastReceiver dataReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case LoaderService.ACTION_LOAD_NEIGHBOURS:
+                    neighbours =
+                            (List<NeighbourItem>) intent.getSerializableExtra(LoaderService.DATA_NEIGHBOURS_NAME);
+                    neighbourFragment.loadItems(neighbours);
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(LoaderService.ACTION_LOAD_NEIGHBOURS);
+        LocalBroadcastManager.getInstance(this).registerReceiver(dataReciever, filter);
+
+        final Intent intent = new Intent(this, LoaderService.class);
+        intent.setAction(LoaderService.ACTION_LOAD_NEIGHBOURS);
+        startService(intent);
+
         neighbourFragment = new NeighbourFragment();
         mapFragment = SupportMapFragment.newInstance();
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -66,6 +94,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(dataReciever);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopService(new Intent(this, LoaderService.class));
+    }
+
     private void selectFragment(Fragment fragment) {
         if (fragment == activeFragment) {
             return;
@@ -82,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<NeighbourItem> buildItemList() {
-        final int cardCnt = 100;
+        final int cardCnt = 3;
         List<NeighbourItem> items = new ArrayList<>();
 
         for (int i = 0; i != cardCnt; i++) {

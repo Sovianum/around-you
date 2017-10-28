@@ -1,6 +1,12 @@
 package ru.mail.park.aroundyou;
 
-public class NeighbourItem {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+
+
+public class NeighbourItem implements Serializable {
     private String login;
     private String sex;
     private String about;
@@ -12,6 +18,14 @@ public class NeighbourItem {
         this.about = about;
         this.age = age;
     }
+
+    public NeighbourItem(JSONObject neighbourJSON) throws JSONException {
+        this.login = neighbourJSON.getString("login");
+        this.sex = neighbourJSON.getString("sex");
+        this.about = neighbourJSON.getString("about");
+        this.age = Integer.parseInt(neighbourJSON.getString("age"));
+    }
+
 
     public String getLogin() {
         return login;
