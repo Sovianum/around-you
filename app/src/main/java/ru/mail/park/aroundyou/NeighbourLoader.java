@@ -10,8 +10,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,16 +22,17 @@ import okhttp3.ResponseBody;
 
 public class NeighbourLoader {
     private final OkHttpClient client = new OkHttpClient();
-    private final Executor executor  = Executors.newSingleThreadExecutor();
+    //private final Executor executor  = Executors.newSingleThreadExecutor();
     private final Handler uiHandler = new Handler(Looper.getMainLooper());
     private static final String jwtStub =
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTc4MjYyMzMsImlkIjoyLCJsb2dpbiI6InRlc3QxIn0.mATPV2kp7Yx_cPEuVuJblbNYAweL2NY6pTbwsXgKj0U";
 
 
     public void loadNeighbours(final List<NeighbourItem> neighbourList) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
+        neighbourList.size();
+        //executor.execute(new Runnable() {
+            //@Override
+            //public void run() {
                 Request request = new Request.Builder()
                         .url(ServerInfo.URL_NEIGHBOUR)
                         .addHeader(ServerInfo.AUTHORIZATION, jwtStub)
@@ -51,7 +50,8 @@ public class NeighbourLoader {
                         for (int i = 0; i < array.length(); i++) {
                             recievedNeighbourList.add(new NeighbourItem(array.getJSONObject(i)));
                         };
-                        setNeighboursList(neighbourList, recievedNeighbourList);
+                        neighbourList.addAll(recievedNeighbourList);
+                        //setNeighboursList(neighbourList, recievedNeighbourList);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -62,8 +62,8 @@ public class NeighbourLoader {
                         body.close();
                     }
                 }
-            }
-        });
+            //}
+        //});
     }
 
     private void setNeighboursList(final List<NeighbourItem> neighbourList,

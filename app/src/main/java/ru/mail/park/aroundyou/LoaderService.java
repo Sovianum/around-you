@@ -8,8 +8,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class LoaderService extends Service {
+    private final Executor executor  = Executors.newSingleThreadExecutor();
     public static final String ACTION_LOAD_NEIGHBOURS = "load_neighbours";
     public static final String DATA_NEIGHBOURS_NAME = "neighbours";
 
@@ -37,12 +40,18 @@ public class LoaderService extends Service {
 
     private void loadNeighbours() {
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        neighbourLoader.loadNeighbours(neighbours);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                neighbourLoader.loadNeighbours(neighbours);
+                Intent loadedNeighboursIntent = new Intent(ACTION_LOAD_NEIGHBOURS);
+                loadedNeighboursIntent.setAction(ACTION_LOAD_NEIGHBOURS);
+                loadedNeighboursIntent.putExtra(DATA_NEIGHBOURS_NAME, (Serializable) neighbours);
+                broadcastManager.sendBroadcast(loadedNeighboursIntent);
+            }
+        });
         //NeighbourItem itemStub = new NeighbourItem("login", "sex", "about", 18);
         //neighbours.add(itemStub);
-        Intent loadedNeighboursIntent = new Intent((ACTION_LOAD_NEIGHBOURS));
-        loadedNeighboursIntent.putExtra(DATA_NEIGHBOURS_NAME, (Serializable) neighbours);
-        broadcastManager.sendBroadcast(loadedNeighboursIntent);
     }
 
     @Override
