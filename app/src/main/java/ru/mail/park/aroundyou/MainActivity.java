@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListenerHandler<OnNeighboursGetListener> neighboursHandler;
 
-    private OnNeighboursGetListener userListener = new OnNeighboursGetListener() {
+    private OnNeighboursGetListener neighboursListener = new OnNeighboursGetListener() {
         @Override
         public void onGettingSuccess(List<NeighbourItem> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         neighbourFragment = new NeighbourFragment();
+        neighbourFragment.setListener(neighboursListener);
         mapFragment = SupportMapFragment.newInstance();
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -55,12 +56,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        neighbourFragment.loadItems(buildItemList());
+        //neighbourFragment.loadItems(buildItemList());
 
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
         }
-        neighboursHandler = Api.getInstance().getNeighbours(userListener);
+        neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
 
         selectFragment(neighbourFragment);
 

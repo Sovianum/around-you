@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,12 +19,35 @@ public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;
     private List<NeighbourItem> items;
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Api.OnNeighboursGetListener onNeighboursGetListener;
 
     public void loadItems(List<NeighbourItem> items) {
         if (this.items == null) {
             this.items = new ArrayList<>();
         }
+        this.items.clear();
         this.items.addAll(items);
+        onItemsLoadComplete();
+    }
+
+    public void setListener(Api.OnNeighboursGetListener onNeighboursGetListener) {
+        this.onNeighboursGetListener = onNeighboursGetListener;
+    }
+
+
+    private void refreshItems() {
+        Api.getInstance().getNeighbours(onNeighboursGetListener);
+
+    }
+
+    private void onItemsLoadComplete() {
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -45,6 +69,14 @@ public class NeighbourFragment extends Fragment {
 
         adapter = new NeighbourAdapter(items);
         recyclerView.setAdapter(adapter);
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshItems();
+            }
+        });
 
         return view;
     }
