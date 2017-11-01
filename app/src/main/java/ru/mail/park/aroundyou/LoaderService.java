@@ -1,66 +1,45 @@
 package ru.mail.park.aroundyou;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+/**
+ * Created by sergey on 01.11.17.
+ */
+public interface LoaderService {
 
-public class LoaderService extends Service {
-    private final Executor executor  = Executors.newSingleThreadExecutor();
-    public static final String ACTION_LOAD_NEIGHBOURS = "load_neighbours";
-    public static final String DATA_NEIGHBOURS_NAME = "neighbours";
+    @POST("api/v1/auth/register")
+    Call<ResponseBody> registerUser();
 
-    public LoaderService() {
-    }
+    @POST("api/v1/auth/login")
+    Call<ResponseBody> loginUser();
 
-    private List<NeighbourItem> neighbours;
-    private NeighbourLoader neighbourLoader;
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        neighbours = new ArrayList<>();
-        neighbourLoader = new NeighbourLoader();
-    }
+    @Headers("Authorization: " + ServerInfo.jwtStub)
+    @POST("api/v1/user/position/save")
+    Call<ResponseBody> savePosition();
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        switch (intent.getAction()) {
-            case ACTION_LOAD_NEIGHBOURS:
-                loadNeighbours();
-                break;
-        }
-        return START_STICKY;
-    }
+    @Headers("Authorization: " + ServerInfo.jwtStub)
+    @GET("api/v1/user/position/neighbours")
+    Call<ResponseBody> getNeighbours();
 
-    private void loadNeighbours() {
-        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                neighbourLoader.loadNeighbours(neighbours);
-                Intent loadedNeighboursIntent = new Intent(ACTION_LOAD_NEIGHBOURS);
-                loadedNeighboursIntent.setAction(ACTION_LOAD_NEIGHBOURS);
-                loadedNeighboursIntent.putExtra(DATA_NEIGHBOURS_NAME, (Serializable) neighbours);
-                broadcastManager.sendBroadcast(loadedNeighboursIntent);
-            }
-        });
-        //NeighbourItem itemStub = new NeighbourItem("login", "sex", "about", 18);
-        //neighbours.add(itemStub);
-    }
+    @Headers("Authorization: " + ServerInfo.jwtStub)
+    @POST("api/v1/user/request/create")
+    Call<ResponseBody> createRequest();
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
+    @Headers("Authorization: " + ServerInfo.jwtStub)
+    @GET("api/v1/user/request")
+    Call<ResponseBody> getAllRequest();
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    @Headers("Authorization: " + ServerInfo.jwtStub)
+    @POST("api/v1/user/request/update")
+    Call<ResponseBody> updateRequest();
+
+    @Headers("Authorization: " + ServerInfo.jwtStub)
+    @GET("api/v1/user/request/new")
+    Call<ResponseBody> getNewRequest();
+
+
 }
