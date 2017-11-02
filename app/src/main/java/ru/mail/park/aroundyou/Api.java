@@ -48,9 +48,12 @@ public class Api {
         return INSTANCE;
     }
 
-    public ListenerHandler<OnNeighboursGetListener>
-    getNeighbours(final OnNeighboursGetListener listener) {
-        final ListenerHandler<OnNeighboursGetListener> handler = new ListenerHandler<>(listener);
+    //public ListenerHandler<OnNeighboursGetListener>
+    //getNeighbours(final OnNeighboursGetListener listener) {
+        //final ListenerHandler<OnNeighboursGetListener> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<List<NeighbourItem>>>
+    getNeighbours(final OnSmthGetListener<List<NeighbourItem>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<NeighbourItem>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -64,6 +67,7 @@ public class Api {
                             throw new IOException("Cannot get body");
                         }
                         final String body = responseBody.string();
+                        //invokeSuccess(handler, parseNeighbours(body));
                         invokeSuccess(handler, parseNeighbours(body));
                     }
                 } catch (IOException e) {
@@ -96,7 +100,41 @@ public class Api {
     }
 
 
-    private void invokeSuccess(final ListenerHandler<OnNeighboursGetListener> handler,
+    private <T> void invokeSuccess(final ListenerHandler<OnSmthGetListener<T>> handler,
+                               final T items) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                OnSmthGetListener<T> listener = handler.getListener();
+                if (listener != null) {
+                    Log.d("API", "listener NOT null in invokeSucces");
+                    listener.onGettingSuccess(items);
+                } else {
+                    Log.d("API", "listener is null");
+                }
+            }
+        });
+    }
+
+    private <T> void invokeError(final ListenerHandler<OnSmthGetListener<T>> handler,
+                                 final Exception error) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                OnSmthGetListener<T> listener = handler.getListener();
+                if (listener != null) {
+                    Log.d("API", "listener NOT null in invokeError");
+                    listener.onGettingError(error);
+                } else {
+                    Log.d("API", "listener is null");
+                }
+            }
+        });
+    }
+
+
+
+    /*private void invokeSuccess(final ListenerHandler<OnNeighboursGetListener> handler,
                                final List<NeighbourItem> neighbourItems) {
         mainHandler.post(new Runnable() {
             @Override
@@ -125,9 +163,14 @@ public class Api {
                 }
             }
         });
+    }*/
+
+
+    public interface OnSmthGetListener<T> {
+        void onGettingSuccess(final T items);
+
+        void onGettingError(final Exception error);
     }
-
-
 
     public interface OnNeighboursGetListener {
         void onGettingSuccess(final List<NeighbourItem> neighbourItems);

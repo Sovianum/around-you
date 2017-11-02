@@ -17,8 +17,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.mail.park.aroundyou.Api.OnNeighboursGetListener;
-
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView nav;
     private NeighbourFragment neighbourFragment;
@@ -26,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment activeFragment;
 
-    private ListenerHandler<OnNeighboursGetListener> neighboursHandler;
+    /*private ListenerHandler<OnNeighboursGetListener> neighboursHandler;
 
-    private OnNeighboursGetListener neighboursListener = new OnNeighboursGetListener() {
+      private OnNeighboursGetListener neighboursListener = new OnNeighboursGetListener() {
         @Override
         public void onGettingSuccess(List<NeighbourItem> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
@@ -37,6 +35,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onGettingError(Exception error) {
             
+        }
+
+    };*/
+
+    private ListenerHandler<Api.OnSmthGetListener<List<NeighbourItem>>> neighboursHandler;
+
+    private Api.OnSmthGetListener<List<NeighbourItem>> neighboursListener = new Api.OnSmthGetListener<List<NeighbourItem>>() {
+        @Override
+        public void onGettingSuccess(List<NeighbourItem> neighbourItems) {
+            neighbourFragment.loadItems(neighbourItems);
+        }
+
+        @Override
+        public void onGettingError(Exception error) {
+
         }
 
     };
@@ -73,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        //Intent intent = new Intent(this, AuthActivity.class);
+        //startActivity(intent);
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
