@@ -5,4 +5,25 @@
     <string name="requests">Requests</string>
     <string name="map">Map</string>
     <string name="title_activity_maps">Map</string>
+    <string name="login_title">Авторизация</string>
+    <string name="register_title">Регистрация</string>
+    <string name="login_hint">login</string>
+    <string name="password_hint">password</string>
+    <string name="confirm_password_hint">password</string>
+    <string name="login_btn">Авторизоваться</string>
+    <string name="register_btn">Зарегистрироваться</string>
+    <string name="text_login_from_register">Нет аккаунта? Зарегистрироваться.</string>
+    <string name="text_register_from_login">Уже зарегистрированы? Авторизоваться.</string>
+    <string-array name="sex">
+        <item>М</item>
+        <item>Ж</item>
+    </string-array>
+    <string name="about_hint">О себе</string>
+    <string name="age_hint">Ваш возраст</string>
+    <string name="json_web_token">jwt</string>
+
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

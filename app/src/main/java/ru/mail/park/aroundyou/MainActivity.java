@@ -1,6 +1,9 @@
 package ru.mail.park.aroundyou;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -17,12 +20,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.mail.park.aroundyou.auth.AuthActivity;
+
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView nav;
     private NeighbourFragment neighbourFragment;
     private SupportMapFragment mapFragment;
 
     private Fragment activeFragment;
+    private String jwt = null;
 
     /*private ListenerHandler<OnNeighboursGetListener> neighboursHandler;
 
@@ -86,8 +92,20 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        //Intent intent = new Intent(this, AuthActivity.class);
-        //startActivity(intent);
+
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        //SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        String jwt = prefs.getString("jwt", null);
+
+        //jwt = null;
+
+        if (jwt == null) {
+            Intent intentAuth = new Intent(this, AuthActivity.class);
+            startActivity(intentAuth);
+        } else {
+            Api.getInstance().setToken(jwt);
+        }
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {

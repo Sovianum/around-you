@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -37,11 +39,17 @@ public class Api {
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
+    private String token;
+
     private Api() {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://around-you-backend.herokuapp.com")
                 .build();
         service = retrofit.create(LoaderService.class);
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public static Api getInstance() {
@@ -58,7 +66,7 @@ public class Api {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service.getNeighbours().execute();
+                    final Response<ResponseBody> response = service.getNeighbours(token).execute();
                     if (response.code() != 200) {
                         throw new IOException("HTTP code " + response.code());
                     }
@@ -99,6 +107,71 @@ public class Api {
         }
     }
 
+    public ListenerHandler<OnSmthGetListener<RecievedData>>
+    loginUser(final OnSmthGetListener<RecievedData> listener, final LoginUser user) {
+        final ListenerHandler<OnSmthGetListener<RecievedData>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final String requsetBody = GSON.toJson(user);
+                    RequestBody requestBody =
+                            RequestBody.create(MediaType.parse("text/plain"), requsetBody);
+                    final Response<ResponseBody> response = service.loginUser(requestBody).execute();
+                    if (response.code() != 200) {
+                        throw new IOException("HTTP code " + response.code());
+                    }
+                    try (final ResponseBody responseBody = response.body()) {
+                        if (responseBody == null) {
+                            throw new IOException("Cannot get body");
+                        }
+                        final String body = responseBody.string();
+                        //invokeSuccess(handler, parseNeighbours(body));
+                        invokeSuccess(handler, parseLoginData(body));
+                    }
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
+    private RecievedData parseLoginData(final String body) {
+        RecievedData recievedData = GSON.fromJson(body, RecievedData.class);
+        return recievedData;
+        //return GSON.fromJson(body, RecievedData.class);
+    }
+
+    public ListenerHandler<OnSmthGetListener<RecievedData>>
+    registerUser(final OnSmthGetListener<RecievedData> listener, final RegisterUser user) {
+        final ListenerHandler<OnSmthGetListener<RecievedData>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final String requsetBody = GSON.toJson(user);
+                    RequestBody requestBody =
+                            RequestBody.create(MediaType.parse("text/plain"), requsetBody);
+                    final Response<ResponseBody> response = service.registerUser(requestBody).execute();
+                    if (response.code() != 200) {
+                        throw new IOException("HTTP code " + response.code());
+                    }
+                    try (final ResponseBody responseBody = response.body()) {
+                        if (responseBody == null) {
+                            throw new IOException("Cannot get body");
+                        }
+                        final String body = responseBody.string();
+                        //invokeSuccess(handler, parseNeighbours(body));
+                        invokeSuccess(handler, parseLoginData(body));
+                    }
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
 
     private <T> void invokeSuccess(final ListenerHandler<OnSmthGetListener<T>> handler,
                                final T items) {

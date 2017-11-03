@@ -21,6 +21,10 @@ public class ServerInfo {
     public static final String AUTHORIZATION = "Authorization";
     public static final String NEIGHBOURS_ARRAY_NAME = "data";
 
-    public static final String jwtStub =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTc4MjYyMzMsImlkIjoyLCJsb2dpbiI6InRlc3QxIn0.mATPV2kp7Yx_cPEuVuJblbNYAweL2NY6pTbwsXgKj0U";
+    public static final String jwtStub = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTc4MjYyMzMsImlkIjoyLCJsb2dpbiI6InRlc3QxIn0.mATPV2kp7Yx_cPEuVuJblbNYAweL2NY6pTbwsXgKj0U";
+
+    //public static void setJwtStub(final String newJwtStub) {
+    //    jwtStub = newJwtStub;
+    //}
+
 }
