@@ -8,9 +8,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 
-/**
- * Created by sergey on 01.11.17.
- */
 public interface LoaderService {
 
     @POST("api/v1/auth/register")

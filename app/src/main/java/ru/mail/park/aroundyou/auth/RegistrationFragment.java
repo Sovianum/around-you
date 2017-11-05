@@ -16,7 +16,7 @@ import android.widget.TextView;
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.RecievedData;
+import ru.mail.park.aroundyou.ReceivedData;
 import ru.mail.park.aroundyou.RegisterUser;
 
 /**
@@ -34,8 +34,8 @@ public class RegistrationFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView linkToLogin;
     private View.OnClickListener setLoginFragmentListener;
-    private Api.OnSmthGetListener<RecievedData> onRegisterDataListener;
-    private ListenerHandler<Api.OnSmthGetListener<RecievedData>> handler;
+    private Api.OnSmthGetListener<ReceivedData> onRegisterDataListener;
+    private ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler;
 
     public RegistrationFragment() {
     }
@@ -45,11 +45,11 @@ public class RegistrationFragment extends Fragment {
     }
 
 
-    public void setListener(Api.OnSmthGetListener<RecievedData> listener) {
+    public void setListener(Api.OnSmthGetListener<ReceivedData> listener) {
         this.onRegisterDataListener = listener;
     }
 
-    public void setHandler(ListenerHandler<Api.OnSmthGetListener<RecievedData>> handler) {
+    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler) {
         this.handler = handler;
     }
 

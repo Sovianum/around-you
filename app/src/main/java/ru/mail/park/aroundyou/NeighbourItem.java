@@ -26,7 +26,6 @@ public class NeighbourItem implements Serializable {
         this.age = Integer.parseInt(neighbourJSON.getString("age"));
     }
 
-
     public String getLogin() {
         return login;
     }

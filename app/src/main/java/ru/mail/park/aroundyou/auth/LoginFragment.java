@@ -16,7 +16,7 @@ import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
 import ru.mail.park.aroundyou.LoginUser;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.RecievedData;
+import ru.mail.park.aroundyou.ReceivedData;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,8 +29,8 @@ public class LoginFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView linkToRegister;
     private View.OnClickListener setRegisterFragmentListener;
-    private Api.OnSmthGetListener<RecievedData> onLoginDataListener;
-    private ListenerHandler<Api.OnSmthGetListener<RecievedData>> handler;
+    private Api.OnSmthGetListener<ReceivedData> onLoginDataListener;
+    private ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler;
 
 
     public LoginFragment() {
@@ -40,11 +40,11 @@ public class LoginFragment extends Fragment {
         this.setRegisterFragmentListener = listener;
     }
 
-    public void setListener(Api.OnSmthGetListener<RecievedData> listener) {
+    public void setListener(Api.OnSmthGetListener<ReceivedData> listener) {
         this.onLoginDataListener = listener;
     }
 
-    public void setHandler(ListenerHandler<Api.OnSmthGetListener<RecievedData>> handler) {
+    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler) {
         this.handler = handler;
     }
 

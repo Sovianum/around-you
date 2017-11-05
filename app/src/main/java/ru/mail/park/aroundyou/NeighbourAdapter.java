@@ -41,7 +41,6 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         NeighbourItem item = items.get(position);
-        //System.out.println(items.size());
 
         CardViewHolder cardHolder = (CardViewHolder) holder;
         cardHolder.loginView.setText(item.getLogin());

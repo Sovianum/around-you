@@ -1,10 +1,6 @@
 package ru.mail.park.aroundyou;
 
-/**
- * Created by sergey on 03.11.17.
- */
-
-public class RecievedData {
+public class ReceivedData {
     private String data;
     private String error;
 

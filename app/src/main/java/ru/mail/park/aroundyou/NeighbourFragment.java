@@ -20,7 +20,6 @@ public class NeighbourFragment extends Fragment {
     private List<NeighbourItem> items;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    //private Api.OnNeighboursGetListener onNeighboursGetListener;
     private Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener;
 
     public void loadItems(List<NeighbourItem> items) {
@@ -32,17 +31,9 @@ public class NeighbourFragment extends Fragment {
         onItemsLoadComplete();
     }
 
-    /*public void setListener(Api.OnNeighboursGetListener onNeighboursGetListener) {
-        this.onNeighboursGetListener = onNeighboursGetListener;
-    }*/
-
     public void setListener(Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener) {
         this.onNeighboursGetListener = onNeighboursGetListener;
     }
-
-
-
-
 
     private void refreshItems() {
         Api.getInstance().getNeighbours(onNeighboursGetListener);
