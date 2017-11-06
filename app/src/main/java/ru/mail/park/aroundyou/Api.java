@@ -25,6 +25,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ru.mail.park.aroundyou.requests.MeetRequestItem;
 import ru.mail.park.aroundyou.model.Position;
 import ru.mail.park.aroundyou.model.User;
 import ru.mail.park.aroundyou.neighbours.NeighbourItem;
@@ -124,6 +125,29 @@ public class Api {
         return handler;
     }
 
+    public ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>>
+    getMeetRequests(final OnSmthGetListener<List<MeetRequestItem>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response<ResponseBody> response = service.getAllRequests().execute();
+                    try (final ResponseBody responseBody = response.body()) {
+                        if (responseBody == null) {
+                            throw new IOException("Cannot get body");
+                        }
+                        final String body = responseBody.string();
+                        invokeSuccess(handler, parseMeetRequests(body));
+                    }
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
     public ListenerHandler<OnSmthGetListener<ReceivedData>>
     loginUser(final OnSmthGetListener<ReceivedData> listener, final User user) {
         final ListenerHandler<OnSmthGetListener<ReceivedData>> handler = new ListenerHandler<>(listener);
@@ -206,6 +230,20 @@ public class Api {
         try {
             JSONObject bodyJSON = new JSONObject(body);
             return new Position(bodyJSON.getJSONObject(ServerInfo.NEIGHBOURS_ARRAY_NAME));
+        } catch (JsonSyntaxException | JSONException | ParseException e) {
+            throw new IOException(e);
+        }
+    }
+
+    private List<MeetRequestItem> parseMeetRequests(final String body) throws IOException {
+        try {
+            final List<MeetRequestItem> receivedNeighbourList = new ArrayList<>();
+            JSONObject bodyJSON = new JSONObject(body);
+            JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);
+            for (int i = 0; i < array.length(); i++) {
+                receivedNeighbourList.add(new MeetRequestItem(array.getJSONObject(i)));
+            }
+            return receivedNeighbourList;
         } catch (JsonSyntaxException | JSONException | ParseException e) {
             throw new IOException(e);
         }

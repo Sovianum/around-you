@@ -3,10 +3,11 @@ package ru.mail.park.aroundyou.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import static ru.mail.park.aroundyou.model.Common.DATE_FORMAT;
 
 public class Position {
     private int id;
@@ -21,9 +22,7 @@ public class Position {
     public Position(JSONObject jsonObject) throws JSONException, ParseException {
         id = jsonObject.getInt("id");
         userId = jsonObject.getInt("user_id");
-        time = new Timestamp(
-                (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")).parse(jsonObject.getString("time")).getTime()
-        );
+        time = Common.extractTimestamp("time", jsonObject);
         point = new Point(jsonObject.getJSONObject("point"));
     }
 

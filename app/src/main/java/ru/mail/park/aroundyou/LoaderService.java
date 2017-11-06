@@ -32,7 +32,7 @@ public interface LoaderService {
     Call<ResponseBody> createRequest();
 
     @GET("api/v1/user/request")
-    Call<ResponseBody> getAllRequest();
+    Call<ResponseBody> getAllRequests();
 
     @POST("api/v1/user/request/update")
     Call<ResponseBody> updateRequest();
