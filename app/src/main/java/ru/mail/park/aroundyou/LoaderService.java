@@ -18,10 +18,10 @@ public interface LoaderService {
 
     //@Headers("Authorization: " + ServerInfo.jwtStub)
     @POST("api/v1/user/position/save")
-    Call<ResponseBody> savePosition(@Header("Authorization") String token);
+    Call<ResponseBody> savePosition(@Header(ServerInfo.AUTH_HEADER) String token);
 
     @GET("api/v1/user/position/neighbours")
-    Call<ResponseBody> getNeighbours(@Header("Authorization") String token);
+    Call<ResponseBody> getNeighbours(@Header(ServerInfo.AUTH_HEADER) String token);
 
     @POST("api/v1/user/request/create")
     Call<ResponseBody> createRequest();

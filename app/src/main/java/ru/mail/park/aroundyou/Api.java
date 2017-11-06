@@ -36,7 +36,7 @@ public class Api {
 
     private Api() {
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://around-you-backend.herokuapp.com")
+                .baseUrl(ServerInfo.BACKEND_URL)
                 .build();
         service = retrofit.create(LoaderService.class);
     }
@@ -76,7 +76,7 @@ public class Api {
     }
 
     public ListenerHandler<OnSmthGetListener<ReceivedData>>
-    loginUser(final OnSmthGetListener<ReceivedData> listener, final LoginUser user) {
+    loginUser(final OnSmthGetListener<ReceivedData> listener, final User user) {
         final ListenerHandler<OnSmthGetListener<ReceivedData>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
@@ -105,7 +105,7 @@ public class Api {
     }
 
     public ListenerHandler<OnSmthGetListener<ReceivedData>>
-    registerUser(final OnSmthGetListener<ReceivedData> listener, final RegisterUser user) {
+    registerUser(final OnSmthGetListener<ReceivedData> listener, final User user) {
         final ListenerHandler<OnSmthGetListener<ReceivedData>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
@@ -165,7 +165,7 @@ public class Api {
                 OnSmthGetListener<T> listener = handler.getListener();
                 if (listener != null) {
                     Log.d("API", "listener NOT null in invokeSucces");
-                    listener.onGettingSuccess(items);
+                    listener.onSuccess(items);
                 } else {
                     Log.d("API", "listener is null");
                 }
@@ -181,7 +181,7 @@ public class Api {
                 OnSmthGetListener<T> listener = handler.getListener();
                 if (listener != null) {
                     Log.d("API", "listener NOT null in invokeError");
-                    listener.onGettingError(error);
+                    listener.onError(error);
                 } else {
                     Log.d("API", "listener is null");
                 }
@@ -190,8 +190,8 @@ public class Api {
     }
 
     public interface OnSmthGetListener<T> {
-        void onGettingSuccess(final T items);
+        void onSuccess(final T items);
 
-        void onGettingError(final Exception error);
+        void onError(final Exception error);
     }
 }

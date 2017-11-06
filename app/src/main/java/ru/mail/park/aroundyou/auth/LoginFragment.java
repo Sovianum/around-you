@@ -14,40 +14,19 @@ import android.widget.TextView;
 
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
-import ru.mail.park.aroundyou.LoginUser;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.ReceivedData;
+import ru.mail.park.aroundyou.User;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class LoginFragment extends Fragment {
-
     private EditText loginText;
     private EditText passwordText;
     private Button loginButton;
     private ProgressBar progressBar;
     private TextView linkToRegister;
-    private View.OnClickListener setRegisterFragmentListener;
-    private Api.OnSmthGetListener<ReceivedData> onLoginDataListener;
+    private View.OnClickListener onClickListener;
+    private Api.OnSmthGetListener<ReceivedData> onDataGetListener;
     private ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler;
-
-
-    public LoginFragment() {
-    }
-
-    public void setListener(View.OnClickListener listener) {
-        this.setRegisterFragmentListener = listener;
-    }
-
-    public void setListener(Api.OnSmthGetListener<ReceivedData> listener) {
-        this.onLoginDataListener = listener;
-    }
-
-    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler) {
-        this.handler = handler;
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,22 +38,31 @@ public class LoginFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         linkToRegister = view.findViewById(R.id.link_to_register);
 
-        final LoginUser userStub = new LoginUser();
-        userStub.setLogin("test3");
-        userStub.setPassword("test3");
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
-                handler = Api.getInstance().loginUser(onLoginDataListener, userStub);
+                final User userStub = new User();
+                userStub.setLogin(loginText.getText().toString());
+                userStub.setPassword(passwordText.getText().toString());
 
+                progressBar.setVisibility(View.VISIBLE);
+                handler = Api.getInstance().loginUser(onDataGetListener, userStub);
             }
         });
 
-        linkToRegister.setOnClickListener(setRegisterFragmentListener);
-
-
+        linkToRegister.setOnClickListener(onClickListener);
         return view;
     }
 
+    public void setOnClickListener(View.OnClickListener listener) {
+        this.onClickListener = listener;
+    }
+
+    public void setOnDataGetListener(Api.OnSmthGetListener<ReceivedData> listener) {
+        this.onDataGetListener = listener;
+    }
+
+    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler) {
+        this.handler = handler;
+    }
 }

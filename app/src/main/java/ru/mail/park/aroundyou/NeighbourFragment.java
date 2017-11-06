@@ -23,12 +23,7 @@ public class NeighbourFragment extends Fragment {
     private Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener;
 
     public void loadItems(List<NeighbourItem> items) {
-        if (this.items == null) {
-            this.items = new ArrayList<>();
-        }
-        this.items.clear();
-        this.items.addAll(items);
-        onItemsLoadComplete();
+        this.items = items;
     }
 
     public void setListener(Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener) {

@@ -30,13 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Api.OnSmthGetListener<List<NeighbourItem>> neighboursListener = new Api.OnSmthGetListener<List<NeighbourItem>>() {
         @Override
-        public void onGettingSuccess(List<NeighbourItem> neighbourItems) {
+        public void onSuccess(List<NeighbourItem> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
         }
 
         @Override
-        public void onGettingError(Exception error) {
-            Log.d(MainActivity.class.getName(), error.toString());
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
         }
     };
 
@@ -45,22 +45,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        neighbourFragment = new NeighbourFragment();
-        neighbourFragment.setListener(neighboursListener);
-        mapFragment = SupportMapFragment.newInstance();
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-
-            }
-        });
+        neighbourFragment = getPreparedNeighbourFragment();
+        mapFragment = getPreparedMapFragment();
+        selectFragment(neighbourFragment);
 
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
         }
         neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
-
-        selectFragment(neighbourFragment);
 
         nav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         nav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -71,16 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-        String jwt = prefs.getString("jwt", null);
-
-        if (jwt == null) {
-            Intent intentAuth = new Intent(this, AuthActivity.class);
-            startActivity(intentAuth);
-        } else {
-            Api.getInstance().setToken(jwt);
-        }
+        checkAuthorization();
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
@@ -99,16 +82,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
         }
+    }
+
+    private void checkAuthorization() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        String jwt = prefs.getString("jwt", null);
+
+        if (jwt == null) {
+            Intent intentAuth = new Intent(this, AuthActivity.class);
+            startActivity(intentAuth);
+        } else {
+            Api.getInstance().setToken(jwt);
+        }
+    }
+
+    private NeighbourFragment getPreparedNeighbourFragment() {
+        if (neighbourFragment != null) {
+            return neighbourFragment;
+        }
+        NeighbourFragment fragment = new NeighbourFragment();
+        fragment.setListener(neighboursListener);
+        return fragment;
+    }
+
+    private SupportMapFragment getPreparedMapFragment() {
+        if (mapFragment != null) {
+            return mapFragment;
+        }
+        SupportMapFragment fragment = SupportMapFragment.newInstance();
+        fragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                Log.d(MainActivity.class.getName(), "Map loaded");
+            }
+        });
+        return fragment;
     }
 
     private void selectFragment(Fragment fragment) {

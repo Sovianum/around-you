@@ -17,7 +17,7 @@ import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.ReceivedData;
-import ru.mail.park.aroundyou.RegisterUser;
+import ru.mail.park.aroundyou.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,26 +33,9 @@ public class RegistrationFragment extends Fragment {
     private Button loginButton;
     private ProgressBar progressBar;
     private TextView linkToLogin;
-    private View.OnClickListener setLoginFragmentListener;
-    private Api.OnSmthGetListener<ReceivedData> onRegisterDataListener;
+    private View.OnClickListener onClickListener;
+    private Api.OnSmthGetListener<ReceivedData> onDataGetListener;
     private ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler;
-
-    public RegistrationFragment() {
-    }
-
-    public void setListener(View.OnClickListener listener) {
-        this.setLoginFragmentListener = listener;
-    }
-
-
-    public void setListener(Api.OnSmthGetListener<ReceivedData> listener) {
-        this.onRegisterDataListener = listener;
-    }
-
-    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler) {
-        this.handler = handler;
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,26 +50,36 @@ public class RegistrationFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         linkToLogin = view.findViewById(R.id.link_to_login);
 
-        final RegisterUser userStub = new RegisterUser();
-        userStub.setLogin("test3");
-        userStub.setPassword("test3");
-        userStub.setAbout("about");
-        userStub.setAge(22);
-        userStub.setSex("M");
-
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
-                handler = Api.getInstance().registerUser(onRegisterDataListener, userStub);
+                final User userStub = new User();
+                userStub.setLogin(loginText.getText().toString());
+                userStub.setPassword(passwordText.getText().toString());
+                userStub.setAbout(aboutText.getText().toString());
+                userStub.setSex(sexText.getText().toString());
 
+                int age = Integer.parseInt(ageText.getText().toString());   // TODO: 11/6/17 add handlers in case of failed parse
+                userStub.setAge(age);
+
+                progressBar.setVisibility(View.VISIBLE);
+                handler = Api.getInstance().registerUser(onDataGetListener, userStub);
             }
         });
 
-        linkToLogin.setOnClickListener(setLoginFragmentListener);
-
+        linkToLogin.setOnClickListener(onClickListener);
         return view;
     }
 
+    public void setOnClickListener(View.OnClickListener listener) {
+        this.onClickListener = listener;
+    }
+
+    public void setOnDataGetListener(Api.OnSmthGetListener<ReceivedData> listener) {
+        this.onDataGetListener = listener;
+    }
+
+    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ReceivedData>> handler) {
+        this.handler = handler;
+    }
 }
