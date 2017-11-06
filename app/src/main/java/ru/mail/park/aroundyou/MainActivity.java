@@ -2,7 +2,7 @@ package ru.mail.park.aroundyou;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,16 +16,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 
 import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+
     private BottomNavigationView nav;
     private NeighbourFragment neighbourFragment;
-    private SupportMapFragment mapFragment;
+    private MapFragment mapFragment;
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<NeighbourItem>>> neighboursHandler;
 
@@ -44,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onStart() {
+        super.onStart();
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         neighbourFragment = getPreparedNeighbourFragment();
         mapFragment = getPreparedMapFragment();
-        selectFragment(neighbourFragment);
+        selectFragment(mapFragment);
 
         nav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         nav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -113,11 +114,11 @@ public class MainActivity extends AppCompatActivity {
         return fragment;
     }
 
-    private SupportMapFragment getPreparedMapFragment() {
+    private MapFragment getPreparedMapFragment() {
         if (mapFragment != null) {
             return mapFragment;
         }
-        SupportMapFragment fragment = SupportMapFragment.newInstance();
+        MapFragment fragment = new MapFragment();
         fragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {

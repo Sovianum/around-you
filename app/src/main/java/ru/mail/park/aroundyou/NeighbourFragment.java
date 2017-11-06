@@ -47,11 +47,15 @@ public class NeighbourFragment extends Fragment {
     }
 
     public void setRefreshing(boolean refreshing) {
-        swipeRefreshLayout.setRefreshing(refreshing);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(refreshing);
+        }
     }
 
     public void loadItems(List<NeighbourItem> items) {
-        adapter.setItems(items);
+        if (adapter != null) {
+            adapter.setItems(items);
+        }
     }
 
     public void setListener(Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener) {

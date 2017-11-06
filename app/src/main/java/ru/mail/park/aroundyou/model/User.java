@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.model;
 
 public class User {
     private String login;

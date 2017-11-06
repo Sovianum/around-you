@@ -7,6 +7,8 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import ru.mail.park.aroundyou.model.Position;
 
 public interface LoaderService {
 
@@ -18,10 +20,13 @@ public interface LoaderService {
 
     //@Headers("Authorization: " + ServerInfo.jwtStub)
     @POST("api/v1/user/position/save")
-    Call<ResponseBody> savePosition(@Header(ServerInfo.AUTH_HEADER) String token);
+    Call<ResponseBody> savePosition(@Header(ServerInfo.AUTH_HEADER) String token, @Body Position position);
 
     @GET("api/v1/user/position/neighbours")
     Call<ResponseBody> getNeighbours(@Header(ServerInfo.AUTH_HEADER) String token);
+
+    @GET("api/v1/user/position/neighbour/{id}")
+    Call<ResponseBody> getNeighbourPosition(@Path("id") int id, @Header(ServerInfo.AUTH_HEADER) String token);
 
     @POST("api/v1/user/request/create")
     Call<ResponseBody> createRequest();
