@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.neighbours;
 
 import org.json.JSONException;
 import org.json.JSONObject;

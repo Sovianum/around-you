@@ -2,7 +2,6 @@ package ru.mail.park.aroundyou;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -20,6 +19,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
+import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
+import ru.mail.park.aroundyou.neighbours.NeighbourItem;
+import ru.mail.park.aroundyou.tracking.MapFragment;
 
 public class MainActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;

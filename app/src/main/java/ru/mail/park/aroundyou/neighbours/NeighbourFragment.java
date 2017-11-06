@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.neighbours;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +13,9 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.mail.park.aroundyou.Api;
+import ru.mail.park.aroundyou.R;
 
 public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;

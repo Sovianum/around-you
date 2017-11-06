@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.tracking;
 
 import android.Manifest;
 import android.content.Context;
@@ -25,6 +25,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import ru.mail.park.aroundyou.Api;
+import ru.mail.park.aroundyou.ListenerHandler;
+import ru.mail.park.aroundyou.MainActivity;
+import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.Position;
 
 import static ru.mail.park.aroundyou.MainActivity.MY_PERMISSIONS_REQUEST_LOCATION;

@@ -27,6 +27,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.mail.park.aroundyou.model.Position;
 import ru.mail.park.aroundyou.model.User;
+import ru.mail.park.aroundyou.neighbours.NeighbourItem;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 

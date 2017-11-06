@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.neighbours;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import ru.mail.park.aroundyou.R;
 
 public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static int CARD_ID = R.layout.item_neighbour_card;
