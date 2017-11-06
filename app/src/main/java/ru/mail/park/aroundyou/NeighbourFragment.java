@@ -1,6 +1,5 @@
 package ru.mail.park.aroundyou;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,13 +16,42 @@ import java.util.List;
 
 public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;
-    private List<NeighbourItem> items;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener;
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_neighbour, container, false);
+        recyclerView = view.findViewById(R.id.recyclerView);
+
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(manager);
+
+        adapter = new NeighbourAdapter(new ArrayList<NeighbourItem>());
+        recyclerView.setAdapter(adapter);
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshItems();
+            }
+        });
+
+        setRefreshing(true);
+        refreshItems();
+
+        return view;
+    }
+
+    public void setRefreshing(boolean refreshing) {
+        swipeRefreshLayout.setRefreshing(refreshing);
+    }
+
     public void loadItems(List<NeighbourItem> items) {
-        this.items = items;
+        adapter.setItems(items);
     }
 
     public void setListener(Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener) {
@@ -41,36 +69,5 @@ public class NeighbourFragment extends Fragment {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (this.items == null) {
-            this.items = new ArrayList<>();
-        }
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_neighbour, container, false);
-        recyclerView = view.findViewById(R.id.recyclerView);
-
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(manager);
-
-        adapter = new NeighbourAdapter(items);
-        recyclerView.setAdapter(adapter);
-
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshItems();
-            }
-        });
-
-        return view;
     }
 }

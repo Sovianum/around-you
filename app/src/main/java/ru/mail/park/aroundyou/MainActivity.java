@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,11 +33,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSuccess(List<NeighbourItem> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
+            neighbourFragment.setRefreshing(false);
         }
 
         @Override
         public void onError(Exception error) {
             Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
         }
     };
 
@@ -44,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        checkAuthorization();
+        if (neighboursHandler != null) {
+            neighboursHandler.unregister();
+        }
+        neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
 
         neighbourFragment = getPreparedNeighbourFragment();
         mapFragment = getPreparedMapFragment();
@@ -57,12 +66,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        checkAuthorization();
-        if (neighboursHandler != null) {
-            neighboursHandler.unregister();
-        }
-        neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {

@@ -29,6 +29,16 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public NeighbourAdapter(List<NeighbourItem> items) {
         this.items = items;
+        notifyDataSetChanged();
+    }
+
+    public void setItems(List<NeighbourItem> items) {
+        this.items = items;
+        notifyDataSetChanged();
+    }
+
+    public List<NeighbourItem> getItems() {
+        return this.items;
     }
 
     @Override
