@@ -32,7 +32,6 @@ public class NeighbourFragment extends Fragment {
 
     private void refreshItems() {
         Api.getInstance().getNeighbours(onNeighboursGetListener);
-
     }
 
     private void onItemsLoadComplete() {

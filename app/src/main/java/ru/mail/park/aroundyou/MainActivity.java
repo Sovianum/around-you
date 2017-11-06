@@ -49,11 +49,6 @@ public class MainActivity extends AppCompatActivity {
         mapFragment = getPreparedMapFragment();
         selectFragment(neighbourFragment);
 
-        if (neighboursHandler != null) {
-            neighboursHandler.unregister();
-        }
-        neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
-
         nav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         nav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -64,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         checkAuthorization();
+        if (neighboursHandler != null) {
+            neighboursHandler.unregister();
+        }
+        neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
