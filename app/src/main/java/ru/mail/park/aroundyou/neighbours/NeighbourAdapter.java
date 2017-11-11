@@ -16,24 +16,40 @@ import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.requests.MeetRequestItem;
+
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static int CARD_ID = R.layout.item_neighbour_card;
     private List<NeighbourItem> items;
-    private Context context;
+    private NeighbourFragment fragment;
     private ListenerHandler<Api.OnSmthGetListener<Integer>> requestHandler;
 
     private Api.OnSmthGetListener<Integer> requestListener = new Api.OnSmthGetListener<Integer>() {
         @Override
         public void onSuccess(Integer code) {
-            Toast.makeText(NeighbourAdapter.this.context, String.format("Response code is %d", code), Toast.LENGTH_LONG).show();
+            String message;
+            switch (code) {
+                case HTTP_OK:
+                    message = fragment.getString(R.string.request_created_str);
+                    break;
+                case HTTP_FORBIDDEN:
+                    message = fragment.getString(R.string.request_exists_str);
+                    break;
+                default:
+                    message = String.format("Response code is %d", code);
+                    break;
+            }
+            Toast.makeText(NeighbourAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
+            fragment.setRefreshing(false);
         }
 
         @Override
         public void onError(Exception error) {
             Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(NeighbourAdapter.this.context, error.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(NeighbourAdapter.this.fragment.getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+            fragment.setRefreshing(false);
         }
     };
 
@@ -41,17 +57,21 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         TextView loginView;
         TextView aboutView;
         ImageView requestBtn;
+        TextView expanderView;
+        int defaultMaxLines;
 
         public CardViewHolder(final View itemView) {
             super(itemView);
             loginView = itemView.findViewById(R.id.login_txt);
             aboutView = itemView.findViewById(R.id.about_txt);
             requestBtn = itemView.findViewById(R.id.request_btn);
+            expanderView = itemView.findViewById(R.id.expander_view);
+            defaultMaxLines = aboutView.getMaxLines();
         }
     }
 
-    public NeighbourAdapter(Context context, List<NeighbourItem> items) {
-        this.context = context;
+    public NeighbourAdapter(NeighbourFragment fragment, List<NeighbourItem> items) {
+        this.fragment = fragment;
         this.items = items;
         notifyDataSetChanged();
     }
@@ -76,13 +96,27 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final NeighbourItem item = items.get(position);
 
-        CardViewHolder cardHolder = (CardViewHolder) holder;
+        final CardViewHolder cardHolder = (CardViewHolder) holder;
         cardHolder.loginView.setText(item.getLogin());
         cardHolder.aboutView.setText(item.getAbout());
         cardHolder.requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fragment.setRefreshing(true);
                 requestHandler = Api.getInstance().createMeetRequest(item.getId(), requestListener);
+            }
+        });
+
+        cardHolder.expanderView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cardHolder.aboutView.getMaxLines() == cardHolder.defaultMaxLines) {
+                    cardHolder.aboutView.setMaxLines(Integer.MAX_VALUE);
+                    cardHolder.expanderView.setText(R.string.collapse_str);
+                } else {
+                    cardHolder.aboutView.setMaxLines(cardHolder.defaultMaxLines);
+                    cardHolder.expanderView.setText(R.string.expand_str);
+                }
             }
         });
     }

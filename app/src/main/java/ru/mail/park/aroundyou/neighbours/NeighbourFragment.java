@@ -32,7 +32,7 @@ public class NeighbourFragment extends Fragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
 
-        adapter = new NeighbourAdapter(getContext(), new ArrayList<NeighbourItem>());
+        adapter = new NeighbourAdapter(this, new ArrayList<NeighbourItem>());
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
