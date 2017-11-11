@@ -48,11 +48,13 @@ public class Api {
         service = retrofit.create(LoaderService.class);
     }
 
-    public void setToken(String token) {
+    public void
+    setToken(String token) {
         this.token = token;
     }
 
-    public static Api getInstance() {
+    public static Api
+    getInstance() {
         return INSTANCE;
     }
 
@@ -117,6 +119,25 @@ public class Api {
                         invokeSuccess(handler, parsePosition(body));
                     }
 
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
+    public ListenerHandler<OnSmthGetListener<Integer>>
+    createMeetRequest(final Integer requestedId, final OnSmthGetListener<Integer> listener) {
+        final ListenerHandler<OnSmthGetListener<Integer>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response<ResponseBody> response = service
+                            .createRequest(new MeetRequestItem(requestedId), token)
+                            .execute();
+                    invokeSuccess(handler, response.code());
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -207,7 +228,8 @@ public class Api {
         return handler;
     }
 
-    private List<NeighbourItem> parseNeighbours(final String body) throws IOException {
+    private List<NeighbourItem>
+    parseNeighbours(final String body) throws IOException {
         try {
             //TODO: поправить это
             //JsonObject jsonArray = GSON.fromJson(body, JsonObject.class);
@@ -226,7 +248,8 @@ public class Api {
         }
     }
 
-    private Position parsePosition(final String body) throws IOException {
+    private Position
+    parsePosition(final String body) throws IOException {
         try {
             JSONObject bodyJSON = new JSONObject(body);
             return new Position(bodyJSON.getJSONObject(ServerInfo.NEIGHBOURS_ARRAY_NAME));
@@ -235,7 +258,8 @@ public class Api {
         }
     }
 
-    private List<MeetRequestItem> parseMeetRequests(final String body) throws IOException {
+    private List<MeetRequestItem>
+    parseMeetRequests(final String body) throws IOException {
         try {
             final List<MeetRequestItem> receivedRequestList = new ArrayList<>();
             JSONObject bodyJSON = new JSONObject(body);
@@ -249,12 +273,13 @@ public class Api {
         }
     }
 
-    private ReceivedData parseLoginData(final String body) {
+    private ReceivedData
+    parseLoginData(final String body) {
         return GSON.fromJson(body, ReceivedData.class);
     }
 
-    private <T> void invokeSuccess(final ListenerHandler<OnSmthGetListener<T>> handler,
-                               final T payload) {
+    private <T> void
+    invokeSuccess(final ListenerHandler<OnSmthGetListener<T>> handler, final T payload) {
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -269,8 +294,8 @@ public class Api {
         });
     }
 
-    private <T> void invokeError(final ListenerHandler<OnSmthGetListener<T>> handler,
-                                 final Exception error) {
+    private <T> void
+    invokeError(final ListenerHandler<OnSmthGetListener<T>> handler, final Exception error) {
         mainHandler.post(new Runnable() {
             @Override
             public void run() {

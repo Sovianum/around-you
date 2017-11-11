@@ -11,6 +11,7 @@ public class NeighbourItem implements Serializable {
     private String sex;
     private String about;
     private int age;
+    private int id;
 
     public NeighbourItem(String login, String sex, String about, int age) {
         this.login = login;
@@ -23,7 +24,12 @@ public class NeighbourItem implements Serializable {
         this.login = neighbourJSON.getString("login");
         this.sex = neighbourJSON.getString("sex");
         this.about = neighbourJSON.getString("about");
-        this.age = Integer.parseInt(neighbourJSON.getString("age"));
+        this.age = neighbourJSON.getInt("age");
+        this.id = neighbourJSON.getInt("id");
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getLogin() {

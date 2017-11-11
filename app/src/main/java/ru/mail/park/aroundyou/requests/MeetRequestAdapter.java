@@ -39,6 +39,7 @@ public class MeetRequestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setItems(List<MeetRequestItem> items) {
         this.items = items;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -9,6 +9,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import ru.mail.park.aroundyou.model.Position;
+import ru.mail.park.aroundyou.requests.MeetRequestItem;
 
 public interface LoaderService {
 
@@ -29,7 +30,7 @@ public interface LoaderService {
     Call<ResponseBody> getNeighbourPosition(@Path("id") int id, @Header(ServerInfo.AUTH_HEADER) String token);
 
     @POST("api/v1/user/request/create")
-    Call<ResponseBody> createRequest(@Header(ServerInfo.AUTH_HEADER) String token);
+    Call<ResponseBody> createRequest(@Body MeetRequestItem requestItem, @Header(ServerInfo.AUTH_HEADER) String token);
 
     @GET("api/v1/user/request/all")
     Call<ResponseBody> getAllRequests(@Header(ServerInfo.AUTH_HEADER) String token);

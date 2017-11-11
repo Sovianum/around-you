@@ -1,5 +1,7 @@
 package ru.mail.park.aroundyou.requests;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,9 +12,13 @@ import ru.mail.park.aroundyou.model.Common;
 
 public class MeetRequestItem {
     private int id;
+    @SerializedName("requester_id")
     private int requesterId;
+    @SerializedName("requested_id")
     private int requestedId;
+    @SerializedName("requester_login")
     private String requesterLogin;
+    @SerializedName("requested_login")
     private String requestedLogin;
     private Timestamp time;
     private String status;
@@ -25,6 +31,10 @@ public class MeetRequestItem {
         requesterLogin = jsonObject.getString("requester_login");
         status = jsonObject.getString("status");
         time = Common.extractTimestamp("time", jsonObject);
+    }
+
+    public MeetRequestItem(int requestedId) {
+        this.requestedId = requestedId;
     }
 
     public String getRequesterLogin() {
