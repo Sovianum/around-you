@@ -17,10 +17,9 @@ import java.util.List;
 
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.neighbours.NeighbourAdapter;
-import ru.mail.park.aroundyou.neighbours.NeighbourItem;
+import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestAdapter;
 
-public class MeetRequestFragment extends Fragment {
+abstract public class MeetRequestFragment extends Fragment {
     private MeetRequestAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -35,7 +34,7 @@ public class MeetRequestFragment extends Fragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
 
-        adapter = new MeetRequestAdapter(new ArrayList<MeetRequestItem>());
+        adapter = getAdapter();
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -51,6 +50,8 @@ public class MeetRequestFragment extends Fragment {
 
         return view;
     }
+
+    abstract protected MeetRequestAdapter getAdapter();
 
     public void setRefreshing(boolean refreshing) {
         if (swipeRefreshLayout != null) {
@@ -69,7 +70,7 @@ public class MeetRequestFragment extends Fragment {
     }
 
     private void refreshItems() {
-        Api.getInstance().getMeetRequests(onRequestsGetListener);
+        Api.getInstance().getOutcomePendingRequests(onRequestsGetListener);
     }
 
     private void onItemsLoadComplete() {

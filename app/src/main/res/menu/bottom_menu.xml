@@ -8,10 +8,16 @@
         android:title="@string/profile"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_requests"
+        android:id="@+id/action_outcome_requests"
         android:enabled="true"
-        android:icon="@drawable/ic_request_24dp"
-        android:title="@string/requests"
+        android:icon="@drawable/ic_outcome_24dp"
+        android:title="@string/outcome"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_income_requests"
+        android:enabled="true"
+        android:icon="@drawable/ic_income_24dp"
+        android:title="@string/income"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_neighbours"

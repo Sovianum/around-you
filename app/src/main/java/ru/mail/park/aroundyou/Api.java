@@ -147,13 +147,13 @@ public class Api {
     }
 
     public ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>>
-    getMeetRequests(final OnSmthGetListener<List<MeetRequestItem>> listener) {
+    getOutcomePendingRequests(final OnSmthGetListener<List<MeetRequestItem>> listener) {
         final ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service.getAllRequests(token).execute();
+                    final Response<ResponseBody> response = service.getOutcomePendingRequests(token).execute();
                     try (final ResponseBody responseBody = response.body()) {
                         if (responseBody == null) {
                             throw new IOException("Cannot get body");

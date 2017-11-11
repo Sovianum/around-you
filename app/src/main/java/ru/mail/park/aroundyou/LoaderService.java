@@ -35,6 +35,12 @@ public interface LoaderService {
     @GET("api/v1/user/request/all")
     Call<ResponseBody> getAllRequests(@Header(ServerInfo.AUTH_HEADER) String token);
 
+    @GET("api/v1/user/request/income/pending")
+    Call<ResponseBody> getIncomePendingRequests(@Header(ServerInfo.AUTH_HEADER) String token);
+
+    @GET("api/v1/user/request/outcome/pending")
+    Call<ResponseBody> getOutcomePendingRequests(@Header(ServerInfo.AUTH_HEADER) String token);
+
     @POST("api/v1/user/request/update")
     Call<ResponseBody> updateRequest(@Header(ServerInfo.AUTH_HEADER) String token);
 
