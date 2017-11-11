@@ -132,7 +132,7 @@ public class Api {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service.getAllRequests().execute();
+                    final Response<ResponseBody> response = service.getAllRequests(token).execute();
                     try (final ResponseBody responseBody = response.body()) {
                         if (responseBody == null) {
                             throw new IOException("Cannot get body");
@@ -237,13 +237,13 @@ public class Api {
 
     private List<MeetRequestItem> parseMeetRequests(final String body) throws IOException {
         try {
-            final List<MeetRequestItem> receivedNeighbourList = new ArrayList<>();
+            final List<MeetRequestItem> receivedRequestList = new ArrayList<>();
             JSONObject bodyJSON = new JSONObject(body);
             JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);
             for (int i = 0; i < array.length(); i++) {
-                receivedNeighbourList.add(new MeetRequestItem(array.getJSONObject(i)));
+                receivedRequestList.add(new MeetRequestItem(array.getJSONObject(i)));
             }
-            return receivedNeighbourList;
+            return receivedRequestList;
         } catch (JsonSyntaxException | JSONException | ParseException e) {
             throw new IOException(e);
         }

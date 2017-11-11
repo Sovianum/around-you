@@ -21,63 +21,63 @@ import ru.mail.park.aroundyou.neighbours.NeighbourAdapter;
 import ru.mail.park.aroundyou.neighbours.NeighbourItem;
 
 public class MeetRequestFragment extends Fragment {
-//    private NeighbourAdapter adapter;
-//    private RecyclerView recyclerView;
-//    private SwipeRefreshLayout swipeRefreshLayout;
-//    private Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener;
-//
-//    @Nullable
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_neighbour, container, false);
-//        recyclerView = view.findViewById(R.id.recyclerView);
-//
-//        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-//        recyclerView.setLayoutManager(manager);
-//
-//        adapter = new NeighbourAdapter(new ArrayList<NeighbourItem>());
-//        recyclerView.setAdapter(adapter);
-//
-//        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                refreshItems();
-//            }
-//        });
-//
-//        setRefreshing(true);
-//        refreshItems();
-//
-//        return view;
-//    }
-//
-//    public void setRefreshing(boolean refreshing) {
-//        if (swipeRefreshLayout != null) {
-//            swipeRefreshLayout.setRefreshing(refreshing);
-//        }
-//    }
-//
-//    public void loadItems(List<NeighbourItem> items) {
-//        if (adapter != null) {
-//            adapter.setItems(items);
-//        }
-//    }
-//
-//    public void setListener(Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener) {
-//        this.onNeighboursGetListener = onNeighboursGetListener;
-//    }
-//
-//    private void refreshItems() {
-//        Api.getInstance().getNeighbours(onNeighboursGetListener);
-//    }
-//
-//    private void onItemsLoadComplete() {
-//        if (swipeRefreshLayout != null) {
-//            swipeRefreshLayout.setRefreshing(false);
-//        }
-//        if (adapter != null) {
-//            adapter.notifyDataSetChanged();
-//        }
-//    }
+    private MeetRequestAdapter adapter;
+    private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_requests, container, false);
+        recyclerView = view.findViewById(R.id.recyclerView);
+
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(manager);
+
+        adapter = new MeetRequestAdapter(new ArrayList<MeetRequestItem>());
+        recyclerView.setAdapter(adapter);
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshItems();
+            }
+        });
+
+        setRefreshing(true);
+        refreshItems();
+
+        return view;
+    }
+
+    public void setRefreshing(boolean refreshing) {
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(refreshing);
+        }
+    }
+
+    public void loadItems(List<MeetRequestItem> items) {
+        if (adapter != null) {
+            adapter.setItems(items);
+        }
+    }
+
+    public void setListener(Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener) {
+        this.onRequestsGetListener = onRequestsGetListener;
+    }
+
+    private void refreshItems() {
+        Api.getInstance().getMeetRequests(onRequestsGetListener);
+    }
+
+    private void onItemsLoadComplete() {
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
 }

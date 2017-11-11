@@ -21,6 +21,8 @@ import java.util.List;
 import ru.mail.park.aroundyou.auth.AuthActivity;
 import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
 import ru.mail.park.aroundyou.neighbours.NeighbourItem;
+import ru.mail.park.aroundyou.requests.MeetRequestFragment;
+import ru.mail.park.aroundyou.requests.MeetRequestItem;
 import ru.mail.park.aroundyou.tracking.MapFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView nav;
     private NeighbourFragment neighbourFragment;
     private MapFragment mapFragment;
+    private MeetRequestFragment meetRequestFragment;
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<NeighbourItem>>> neighboursHandler;
 
@@ -43,6 +46,23 @@ public class MainActivity extends AppCompatActivity {
         public void onError(Exception error) {
             Log.e(MainActivity.class.getName(), error.toString());
             Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            neighbourFragment.setRefreshing(false);
+        }
+    };
+
+    private Api.OnSmthGetListener<List<MeetRequestItem>> meetRequestListener = new Api.OnSmthGetListener<List<MeetRequestItem>>() {
+
+        @Override
+        public void onSuccess(List<MeetRequestItem> items) {
+            meetRequestFragment.loadItems(items);
+            meetRequestFragment.setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            meetRequestFragment.setRefreshing(false);
         }
     };
 
@@ -59,9 +79,10 @@ public class MainActivity extends AppCompatActivity {
 
         neighbourFragment = getPreparedNeighbourFragment();
         mapFragment = getPreparedMapFragment();
+        meetRequestFragment = getPreparedMeetRequestFragment();
         selectFragment(mapFragment);
 
-        nav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        nav = findViewById(R.id.bottom_navigation);
         nav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -69,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        nav.setSelectedItemId(R.id.action_map);
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
@@ -76,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_profile:
                 break;
             case R.id.action_requests:
+                selectFragment(meetRequestFragment);
                 break;
             case R.id.action_neighbours:
                 selectFragment(neighbourFragment);
@@ -105,6 +128,16 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Api.getInstance().setToken(jwt);
         }
+    }
+
+    private MeetRequestFragment getPreparedMeetRequestFragment() {
+        if (meetRequestFragment != null) {
+            return meetRequestFragment;
+        }
+
+        MeetRequestFragment fragment = new MeetRequestFragment();
+        fragment.setListener(meetRequestListener);
+        return fragment;
     }
 
     private NeighbourFragment getPreparedNeighbourFragment() {

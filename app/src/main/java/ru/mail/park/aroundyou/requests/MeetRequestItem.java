@@ -12,6 +12,8 @@ public class MeetRequestItem {
     private int id;
     private int requesterId;
     private int requestedId;
+    private String requesterLogin;
+    private String requestedLogin;
     private Timestamp time;
     private String status;
 
@@ -19,8 +21,18 @@ public class MeetRequestItem {
         id = jsonObject.getInt("id");
         requestedId = jsonObject.getInt("requested_id");
         requesterId = jsonObject.getInt("requester_id");
+        requestedLogin = jsonObject.getString("requested_login");
+        requesterLogin = jsonObject.getString("requester_login");
         status = jsonObject.getString("status");
         time = Common.extractTimestamp("time", jsonObject);
+    }
+
+    public String getRequesterLogin() {
+        return requesterLogin;
+    }
+
+    public String getRequestedLogin() {
+        return requestedLogin;
     }
 
     public int getId() {

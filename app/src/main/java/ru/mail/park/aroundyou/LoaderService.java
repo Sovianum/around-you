@@ -29,13 +29,13 @@ public interface LoaderService {
     Call<ResponseBody> getNeighbourPosition(@Path("id") int id, @Header(ServerInfo.AUTH_HEADER) String token);
 
     @POST("api/v1/user/request/create")
-    Call<ResponseBody> createRequest();
+    Call<ResponseBody> createRequest(@Header(ServerInfo.AUTH_HEADER) String token);
 
-    @GET("api/v1/user/request")
-    Call<ResponseBody> getAllRequests();
+    @GET("api/v1/user/request/all")
+    Call<ResponseBody> getAllRequests(@Header(ServerInfo.AUTH_HEADER) String token);
 
     @POST("api/v1/user/request/update")
-    Call<ResponseBody> updateRequest();
+    Call<ResponseBody> updateRequest(@Header(ServerInfo.AUTH_HEADER) String token);
 
     @GET("api/v1/user/request/new")
     Call<ResponseBody> getNewRequest();
