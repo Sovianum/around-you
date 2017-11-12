@@ -10,7 +10,7 @@ import ru.mail.park.aroundyou.model.MeetRequest;
 public class IncomeMeetRequestFragment extends MeetRequestFragment {
     @Override
     protected MeetRequestAdapter getAdapter() {
-        return new IncomeMeetRequestAdapter(new ArrayList<MeetRequest>());
+        return new IncomeMeetRequestAdapter(this, new ArrayList<MeetRequest>());
     }
 
     @Override

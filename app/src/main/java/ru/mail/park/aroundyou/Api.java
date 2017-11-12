@@ -25,6 +25,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ru.mail.park.aroundyou.model.MeetRequestUpdate;
 import ru.mail.park.aroundyou.model.User;
 import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.model.Position;
@@ -135,6 +136,25 @@ public class Api {
                 try {
                     final Response<ResponseBody> response = service
                             .createRequest(new MeetRequest(requestedId), token)
+                            .execute();
+                    invokeSuccess(handler, response.code());
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
+    public ListenerHandler<OnSmthGetListener<Integer>>
+    updateMeetRequest(final MeetRequestUpdate update, final OnSmthGetListener<Integer> listener) {
+        final ListenerHandler<OnSmthGetListener<Integer>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response<ResponseBody> response = service
+                            .updateRequest(update, token)
                             .execute();
                     invokeSuccess(handler, response.code());
                 } catch (IOException e) {

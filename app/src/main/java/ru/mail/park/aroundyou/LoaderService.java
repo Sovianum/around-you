@@ -8,6 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import ru.mail.park.aroundyou.model.MeetRequestUpdate;
 import ru.mail.park.aroundyou.model.Position;
 import ru.mail.park.aroundyou.model.MeetRequest;
 
@@ -41,7 +42,7 @@ public interface LoaderService {
     Call<ResponseBody> getOutcomePendingRequests(@Header(ServerInfo.AUTH_HEADER) String token);
 
     @POST("api/v1/user/request/update")
-    Call<ResponseBody> updateRequest(@Header(ServerInfo.AUTH_HEADER) String token);
+    Call<ResponseBody> updateRequest(@Body MeetRequestUpdate update, @Header(ServerInfo.AUTH_HEADER) String token);
 
     @GET("api/v1/user/request/new")
     Call<ResponseBody> getNewRequest();

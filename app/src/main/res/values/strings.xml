@@ -30,6 +30,9 @@
     <string name="collapse_str"><u>Скрыть</u></string>
     <string name="request_created_str">Запрос на встречу успешно создан</string>
     <string name="request_exists_str">Запрос уже существует</string>
+    <string name="request_accepted_str">Запрос принят</string>
+    <string name="user_busy_str">Пользователь занят. Попробуйте позже</string>
+    <string name="request_declined_str">Запрос отклонен</string>
     <string name="submit"><u>Принять</u></string>
     <string name="decline"><u>Отклонить</u></string>
     <string name="long_sentence">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum</string>
