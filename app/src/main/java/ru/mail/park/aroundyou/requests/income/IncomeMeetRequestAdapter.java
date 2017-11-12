@@ -19,6 +19,7 @@ import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.MeetRequestUpdate;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.model.MeetRequest;
+import ru.mail.park.aroundyou.tracking.Tracker;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -30,13 +31,13 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
     public static final int CARD_ID = R.layout.item_income_request_card;
     private List<MeetRequest> items;
     private Fragment fragment;
-    private ListenerHandler<Api.OnSmthGetListener<Integer>> acceptHandler;
-    private ListenerHandler<Api.OnSmthGetListener<Integer>> declineHandler;
+    private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> acceptHandler;
+    private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> declineHandler;
 
-    private Api.OnSmthGetListener<Integer> acceptListener = new Api.OnSmthGetListener<Integer>() {
+    private Api.OnSmthGetListener<MeetRequest> acceptListener = new Api.OnSmthGetListener<MeetRequest>() {
         @Override
-        public void onSuccess(Integer code) {
-            handleAcceptResponseCode(code);
+        public void onSuccess(MeetRequest payload) {
+            handleAcceptResponseCode(payload);
         }
 
         @Override
@@ -45,10 +46,10 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         }
     };
 
-    private Api.OnSmthGetListener<Integer> declineListener = new Api.OnSmthGetListener<Integer>() {
+    private Api.OnSmthGetListener<MeetRequest> declineListener = new Api.OnSmthGetListener<MeetRequest>() {
         @Override
-        public void onSuccess(Integer code) {
-            handleDeclineResponseCode(code);
+        public void onSuccess(MeetRequest payload) {
+            handleDeclineResponseCode(payload);
         }
 
         @Override
@@ -80,14 +81,14 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         cardHolder.submitView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acceptHandler = updateMeetRequest(item.getId(), STATUS_ACCEPTED);
+                acceptHandler = updateMeetRequest(item.getId(), STATUS_ACCEPTED, acceptListener);
             }
         });
 
         cardHolder.declineView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                declineHandler = updateMeetRequest(item.getId(), STATUS_DECLINED);
+                declineHandler = updateMeetRequest(item.getId(), STATUS_DECLINED, declineListener);
             }
         });
     }
@@ -103,45 +104,33 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         notifyDataSetChanged();
     }
 
-    private ListenerHandler<Api.OnSmthGetListener<Integer>>
-    updateMeetRequest(int id, String status) {
+    private ListenerHandler<Api.OnSmthGetListener<MeetRequest>>
+    updateMeetRequest(int id, String status, Api.OnSmthGetListener<MeetRequest> listener) {
         return Api.getInstance().updateMeetRequest(
                 new MeetRequestUpdate(id, status),
-                declineListener
+                listener
         );
     }
 
-    private void handleAcceptResponseCode(Integer code) {
-        String message;
-        switch (code) {
-            case HTTP_OK:
-                message = fragment.getString(R.string.request_accepted_str);
-                break;
-            case HTTP_UNAVAILABLE_FOR_LEGAL_REASONS:
-                message = fragment.getString(R.string.user_busy_str);
-                break;
-            default:
-                message = String.format("Response code is %d", code);
-                break;
-        }
+    private void handleAcceptResponseCode(MeetRequest request) {
+        String message = fragment.getString(R.string.request_accepted_str);
+        Tracker.getInstance(fragment.getContext()).startTracking(request.getRequesterId());
+
         Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
-    private void handleDeclineResponseCode(Integer code) {
-        String message;
-        switch (code) {
-            case HTTP_OK:
-                message = fragment.getString(R.string.request_declined_str);
-                break;
-            default:
-                message = String.format("Response code is %d", code);
-                break;
-        }
+    private void handleDeclineResponseCode(MeetRequest request) {
+        String message = fragment.getString(R.string.request_declined_str);
+
         Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     private void handleAcceptError(Exception error) {
         Log.e(MainActivity.class.getName(), error.toString());
+
+        if (IncomeMeetRequestAdapter.this.fragment.getActivity() == null) {
+            return;
+        }
         Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), error.toString(), Toast.LENGTH_LONG).show();
     }
 

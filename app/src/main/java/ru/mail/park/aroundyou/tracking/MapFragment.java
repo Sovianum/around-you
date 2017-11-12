@@ -53,10 +53,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         @Override
         public void onLocationChanged(final Location location) {
-            Position position = new Position(location.getAltitude(), location.getLongitude());
+            Position position = new Position(location.getLatitude(), location.getLongitude());
             positionHandler = Api.getInstance().savePosition(position, listener);
             setMyMarker(new LatLng(location.getLatitude(), location.getLongitude()));
-            fitCamera();
         }
 
         @Override
@@ -73,6 +72,13 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private Marker myMarker;
     private Marker destMarker;
 
+    private Tracker.PositionListener positionListener = new Tracker.PositionListener() {
+        @Override
+        public void onPositionChange(Position.Point point) {
+            setDestMarker(new LatLng(point.getX(), point.getY()));
+        }
+    };
+
     @Override
     public void onStart() {
         super.onStart();
@@ -86,9 +92,18 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 );
             }
         }
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION
+                );
+            }
+        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, onSelfLocationChangeListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, onSelfLocationChangeListener);
         getMapAsync(this);
-        startTracking(1);
+        Tracker.getInstance(this.getContext()).subscribe(positionListener);
     }
 
     @Override
@@ -101,7 +116,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        onSelfLocationChangeListener.onLocationChanged(getLastLocation());
     }
 
     @Override
@@ -110,68 +124,40 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getContext(), "You will not be able to meet other users", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.can_not_meet_str, Toast.LENGTH_LONG).show();
                 }
             }
         }
     }
 
     private void setDestMarker(LatLng pos) {
+        if (getActivity() == null) {
+            return;
+        }
         if (destMarker != null) {
             destMarker.remove();
         }
-        destMarker = addMarker(pos, BitmapDescriptorFactory.HUE_BLUE);
+        destMarker = addMarker(pos, BitmapDescriptorFactory.HUE_BLUE, getString(R.string.dest_marker_str));
     }
 
     private void setMyMarker(LatLng pos) {
+        if (getActivity() == null) {
+            return;
+        }
         if (myMarker != null) {
             myMarker.remove();
         }
-        myMarker = addMarker(pos, BitmapDescriptorFactory.HUE_RED);
-        map.moveCamera(CameraUpdateFactory.newLatLng(pos));
-    }
-
-    private void startTracking(final int id) {
-        onDestPositionChangeListener = new Api.OnSmthGetListener<Position>() {
-            private int userId = id;
-
-            @Override
-            public void onSuccess(Position pos) {
-                if (pos == null || pos.getPoint() == null) {
-                    return;
-                }
-                if (MapFragment.this.getActivity() == null) {
-                    return;
-                }
-
-                setDestMarker(new LatLng(pos.getPoint().getY(), pos.getPoint().getX()));    // todo transpose coordinates
-                fitCamera();
-                Api.getInstance().getNeighbourPosition(userId, this);
-            }
-
-            @Override
-            public void onError(Exception error) {
-                Log.e(MainActivity.class.getName(), error.toString());
-            }
-        };
-        Api.getInstance().getNeighbourPosition(id, onDestPositionChangeListener);
-    }
-
-    private void stopTracking() {
-        onDestPositionChangeListener = null;
-        if (destMarker != null) {
-            destMarker.remove();
-        }
+        myMarker = addMarker(pos, BitmapDescriptorFactory.HUE_RED, getString(R.string.you_marker_str));
     }
 
     @Nullable
-    private Marker addMarker(LatLng pos, float color) {
+    private Marker addMarker(LatLng pos, float color, String name) {
         if (map != null) {
             return map.
                     addMarker(
                             new MarkerOptions().
                                     position(pos).
-                                    title(getString(R.string.you_marker_str)).
+                                    title(name).
                                     icon(BitmapDescriptorFactory.defaultMarker(color))
                     );
         }

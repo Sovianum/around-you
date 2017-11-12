@@ -24,12 +24,24 @@ public class MeetRequest {
     private String status;
 
     public MeetRequest(JSONObject jsonObject) throws JSONException, ParseException {
-        id = jsonObject.getInt("id");
+        try {
+            id = jsonObject.getInt("id");
+        } catch (JSONException ignored) {}
         requestedId = jsonObject.getInt("requested_id");
         requesterId = jsonObject.getInt("requester_id");
-        requestedLogin = jsonObject.getString("requested_login");
-        requesterLogin = jsonObject.getString("requester_login");
-        requesterAbout = jsonObject.getString("requester_about");
+
+        try {
+            requestedLogin = jsonObject.getString("requested_login");
+        } catch (JSONException ignored) {}
+
+        try {
+            requesterLogin = jsonObject.getString("requester_login");
+        } catch (JSONException ignored) {}
+
+        try {
+            requesterAbout = jsonObject.getString("requester_about");
+        } catch (JSONException ignored) {}
+
         status = jsonObject.getString("status");
         time = Common.extractTimestamp("time", jsonObject);
     }

@@ -25,6 +25,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="you_marker_str">You</string>
+    <string name="dest_marker_str">Dest</string>
     <string name="arrow"><![CDATA[=>]]></string>
     <string name="expand_str"><u>Еще</u></string>
     <string name="collapse_str"><u>Скрыть</u></string>
@@ -38,4 +39,5 @@
     <string name="long_sentence">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum</string>
     <string name="income">Income</string>
     <string name="outcome">Outcome</string>
+    <string name="can_not_meet_str">Вы не сможете встретиться с другими пользователями</string>
 </resources>
