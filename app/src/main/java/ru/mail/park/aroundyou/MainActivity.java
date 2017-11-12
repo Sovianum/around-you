@@ -43,12 +43,14 @@ public class MainActivity extends AppCompatActivity {
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
     private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
+    private ListenerHandler<DBApi.OnDBDataGetListener<User>> userHandler;
 
     private Api.OnSmthGetListener<List<User>> neighboursListener = new Api.OnSmthGetListener<List<User>>() {
         @Override
         public void onSuccess(List<User> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
             cacheNeighbours(neighbourItems);
+            cacheUsers(neighbourItems);
             neighbourFragment.setRefreshing(false);
         }
 
@@ -138,7 +140,17 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT
                 ).show();
             }
+        }
+    };
 
+    private DBApi.OnDBDataGetListener<User> userListenerDB = new DBApi.OnDBDataGetListener<User>() {
+        @Override
+        public void onSuccess(User user) {
+        }
+
+        @Override
+        public void onError(Exception error) {
+            //если нет в базе, тогда будем запрашивать из сети
         }
     };
 
@@ -148,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
+        getApplicationContext().deleteDatabase("AroundYouDB.db");
 
         neighbourFragment = getPreparedNeighbourFragment();
         if (neighboursHandler != null) {
@@ -158,7 +171,11 @@ public class MainActivity extends AppCompatActivity {
             neighboursHandlerDB.unregister();
         }
         neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
+
         Pusher.getInstance().subscribe(pushListener);
+
+
+        userHandler = DBApi.getInstance(this).getUser(userListenerDB, 3);
 
         mapFragment = getPreparedMapFragment();
         outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
@@ -174,6 +191,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         nav.setSelectedItemId(R.id.action_income_requests);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (neighboursHandler != null) {
+            neighboursHandler.unregister();
+        }
+
+        if (neighboursHandlerDB != null) {
+            neighboursHandlerDB.unregister();
+        }
+
+        Pusher.getInstance().unSubscribe();
+        if (userHandler != null) {
+            userHandler.unregister();
+        }
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
@@ -193,20 +227,6 @@ public class MainActivity extends AppCompatActivity {
                 selectFragment(mapFragment);
                 break;
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (neighboursHandler != null) {
-            neighboursHandler.unregister();
-        }
-
-        if (neighboursHandlerDB != null) {
-            neighboursHandlerDB.unregister();
-        }
-
-        Pusher.getInstance().unSubscribe();
     }
 
     private void checkAuthorization() {
@@ -281,5 +301,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void cacheNeighbours(List<User> neighbourItems) {
         DBApi.getInstance(this).insertNeighbours(neighbourItems);
+    }
+
+    public void cacheUsers(List<User> users) {
+        DBApi.getInstance(this).insertUsers(users);
     }
 }

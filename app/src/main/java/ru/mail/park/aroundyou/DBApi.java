@@ -6,11 +6,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Handler;
-import android.os.Looper;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,10 +15,6 @@ import java.util.concurrent.Executors;
 
 import ru.mail.park.aroundyou.model.User;
 
-/**
- * Created by sergey on 12.11.17.
- */
-
 public class DBApi {
     @SuppressLint("StaticFieldLeak")
     private static final DBApi INSTANCE = new DBApi();
@@ -31,15 +22,24 @@ public class DBApi {
 
     private static final int VERSION = 1;
     private static final String DB_NAME = "AroundYouDB.db";
-    private static final String TABLE_NAME = "NEIGHBOURS";
-    private static final String COLUMN_NEIGHBOUR_ID = "neighbour_id";
+
+    private static final String TABLE_NAME_NEIGHBOURS = "NEIGHBOURS";
+    private static final String COLUMN_USER_ID = "user_id";
     private static final String COLUMN_LOGIN = "login";
     private static final String COLUMN_SEX = "sex";
     private static final String COLUMN_ABOUT = "about";
     private static final String COLUMN_AGE = "age";
 
+    /*private static final String TABLE_NAME_REQUESTS = "REQUESTS";
+    private static final String COLUMN_REQUESTER_ID = "requester_id";
+    private static final String COLUMN_REQUESTED_ID = "requested_id";
+    private static final String COLUMN_REQUESTER_LOGIN = "requester_login";
+    private static final String COLUMN_REQUESTED_LOGIN = "requested_login";
+    private static final String COLUMN_REQUESTER_ABOUT= "requester_about";
+    private static final String COLUMN_TIME= "time";
+    private static final String COLUMN_STATUS= "status";*/
 
-
+    private static final String TABLE_NAME_USERS= "USERS";
 
     private DBApi() {
 
@@ -47,7 +47,9 @@ public class DBApi {
 
     public static DBApi
     getInstance(Context context) {
-        INSTANCE.context = context.getApplicationContext();
+        if (INSTANCE.context == null) {
+            INSTANCE.context = context.getApplicationContext();
+        }
         return INSTANCE;
     }
 
@@ -76,8 +78,22 @@ public class DBApi {
     }
 
     private void createDatabase(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE '" + TABLE_NAME + "' (ID INTEGER PRIMARY KEY, "
-                + COLUMN_NEIGHBOUR_ID + " INTEGER UNIQUE NOT NULL, "
+        db.execSQL("CREATE TABLE '" + TABLE_NAME_NEIGHBOURS + "' (ID INTEGER PRIMARY KEY, "
+                + COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, "
+                + COLUMN_LOGIN + " TEXT NOT NULL, "
+                + COLUMN_ABOUT + " TEXT NOT NULL, "
+                + COLUMN_AGE + " INTEGER NOT NULL, "
+                + COLUMN_SEX + " TEXT NOT NULL)");
+        /*db.execSQL("CREATE TABLE '" + TABLE_NAME_REQUESTS + "' (ID INTEGER PRIMARY KEY, "
+                + COLUMN_REQUESTER_ID + " INTEGER UNIQUE NOT NULL, "
+                + COLUMN_REQUESTED_ID+ " INTEGER UNIQUE NOT NULL, "
+                + COLUMN_REQUESTER_LOGIN + " TEXT NOT NULL, "
+                + COLUMN_REQUESTED_LOGIN + " TEXT NOT NULL, "
+                + COLUMN_REQUESTER_ABOUT + " TEXT NOT NULL, "
+                + COLUMN_TIME + " DATETIME NOT NULL, "
+                + COLUMN_STATUS + " TEXT NOT NULL)");*/
+        db.execSQL("CREATE TABLE '" + TABLE_NAME_USERS + "' (ID INTEGER PRIMARY KEY, "
+                + COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, "
                 + COLUMN_LOGIN + " TEXT NOT NULL, "
                 + COLUMN_ABOUT + " TEXT NOT NULL, "
                 + COLUMN_AGE + " INTEGER NOT NULL, "
@@ -96,13 +112,32 @@ public class DBApi {
     }
 
     private void insertNeighbourDB(User neighbourItem) {
+        insertNeighbourOrUserDB(neighbourItem, TABLE_NAME_NEIGHBOURS);
+    }
+
+    public void insertUsers(final List<User> users) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (User user : users) {
+                    insertUserDB(user);
+                }
+            }
+        });
+    }
+
+    private void insertUserDB(User neighbourItem) {
+        insertNeighbourOrUserDB(neighbourItem, TABLE_NAME_USERS);
+    }
+
+    private void insertNeighbourOrUserDB(User user, String neighbourOrUser) {
         checkInitialized();
         try {
-            database.execSQL("INSERT INTO " + TABLE_NAME
-                            + " (" + COLUMN_NEIGHBOUR_ID + ", " + COLUMN_LOGIN + ", " + COLUMN_ABOUT + ", "
+            database.execSQL("INSERT INTO " + TABLE_NAME_NEIGHBOURS
+                            + " (" + COLUMN_USER_ID + ", " + COLUMN_LOGIN + ", " + COLUMN_ABOUT + ", "
                             + COLUMN_SEX + ", " + COLUMN_AGE +  ") VALUES (?, ?, ?, ?, ?)",
-                    new Object[]{neighbourItem.getId(), neighbourItem.getLogin(),
-                            neighbourItem.getAbout(), neighbourItem.getSex(), neighbourItem.getAge()});
+                    new Object[]{user.getId(), user.getLogin(),
+                            user.getAbout(), user.getSex(), user.getAge()});
         } catch (SQLException ignored) {
 
         }
@@ -116,7 +151,7 @@ public class DBApi {
             public void run() {
                 checkInitialized();
 
-                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_USERS, null);
                 if (cursor == null) {
                     listener.onError(new IOException("DB exception"));
                 } else {
@@ -128,7 +163,7 @@ public class DBApi {
                                     cursor.getString(cursor.getColumnIndex(COLUMN_SEX)),
                                     cursor.getString(cursor.getColumnIndex(COLUMN_ABOUT)),
                                     cursor.getInt(cursor.getColumnIndex(COLUMN_AGE)),
-                                    cursor.getInt(cursor.getColumnIndex(COLUMN_NEIGHBOUR_ID))
+                                    cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID))
                             ));
                         }
                     } finally {
@@ -141,24 +176,152 @@ public class DBApi {
         return handler;
     }
 
-    public void clean() {
+
+    public ListenerHandler<OnDBDataGetListener<List<User>>>
+    getUsers(final OnDBDataGetListener<List<User>> listener) {
+        final ListenerHandler<OnDBDataGetListener<List<User>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                cleanDB();
+                checkInitialized();
+
+                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_USERS, null);
+                if (cursor == null) {
+                    listener.onError(new IOException("DB exception"));
+                } else {
+                    final List<User> result = new ArrayList<>();
+                    try {
+                        while (cursor.moveToNext()) {
+                            result.add(new User(
+                                    cursor.getString(cursor.getColumnIndex(COLUMN_LOGIN)),
+                                    cursor.getString(cursor.getColumnIndex(COLUMN_SEX)),
+                                    cursor.getString(cursor.getColumnIndex(COLUMN_ABOUT)),
+                                    cursor.getInt(cursor.getColumnIndex(COLUMN_AGE)),
+                                    cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID))
+                            ));
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                    listener.onSuccess(result);
+                }
+            }
+        });
+        return handler;
+    }
+
+    public ListenerHandler<OnDBDataGetListener<User>>
+    getUser(final OnDBDataGetListener<User> listener, final int userId) {
+        final ListenerHandler<OnDBDataGetListener<User>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                checkInitialized();
+
+                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_USERS + " WHERE " + COLUMN_USER_ID + " = ?",
+                        new String[] {String.valueOf(userId)});
+                if (cursor == null) {
+                    listener.onError(new IOException("DB exception"));
+                } else {
+                    User user = null;
+                    try {
+                        if (cursor.moveToFirst()) {
+                            user = new User(cursor.getString(cursor.getColumnIndex(COLUMN_LOGIN)),
+                                    cursor.getString(cursor.getColumnIndex(COLUMN_SEX)),
+                                    cursor.getString(cursor.getColumnIndex(COLUMN_ABOUT)),
+                                    cursor.getInt(cursor.getColumnIndex(COLUMN_AGE)),
+                                    cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID))
+                            );
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                    if (user != null) {
+                        listener.onSuccess(user);
+                    } else {
+                        listener.onError(new IOException("There is no user in DB"));
+                    }
+                }
+            }
+        });
+
+
+        return handler;
+    }
+
+
+    /*public ListenerHandler<OnDBDataGetListener<List<MeetRequest>>>
+    getNeighbours(final OnDBDataGetListener<List<MeetRequest>> listener) {
+        final ListenerHandler<OnDBDataGetListener<List<MeetRequest>>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                checkInitialized();
+
+                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_NEIGHBOURS, null);
+                if (cursor == null) {
+                    listener.onError(new IOException("DB exception"));
+                } else {
+                    final List<MeetRequest> result = new ArrayList<>();
+                    try {
+                        while (cursor.moveToNext()) {
+                            result.add(new MeetRequest()
+                            ));
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                    listener.onSuccess(result);
+                }
+            }
+        });
+        return handler;
+    }*/
+
+    public void cleanNeighbours() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                cleanDB(TABLE_NAME_NEIGHBOURS);
             }
         });
     }
 
-    public void cleanDB() {
+    public void cleanDB(String tableName) {
         checkInitialized();
 
-        database.execSQL("DELETE FROM " + TABLE_NAME);
+        database.execSQL("DELETE FROM " + tableName);
     }
 
     public void dropTableNeighbours() {
-        dropTable(TABLE_NAME);
+        dropTable(TABLE_NAME_NEIGHBOURS);
     }
+
+    /*public void insertRequset(final MeetRequest request) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                insertRequestDB(request);
+            }
+        });
+    }
+
+    private void insertRequestDB(MeetRequest request) {
+        checkInitialized();
+        try {
+            database.execSQL("INSERT INTO " + TABLE_NAME_REQUESTS
+                            + " (" + COLUMN_REQUESTED_ID + ", " + COLUMN_REQUESTER_ID + ", "
+                            + COLUMN_REQUESTED_LOGIN+ ", " + COLUMN_REQUESTER_LOGIN + ", "
+                            + COLUMN_REQUESTER_ABOUT + ", " + COLUMN_TIME + ", "
+                            + COLUMN_STATUS +  ") VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    new Object[]{request.getRequestedId(), request.getRequesterId(),
+                            request.getRequestedLogin(), request.getRequesterLogin(),
+                            request.getRequesterAbout(), request.getTime(),
+                            request.getStatus()});
+        } catch (SQLException ignored) {
+
+        }
+    }*/
 
     private void dropTable(final String tableName) {
         checkInitialized();
@@ -169,7 +332,6 @@ public class DBApi {
             }
         });
     }
-
 
     public interface OnDBDataGetListener<T> {
         void onSuccess(final T items);
