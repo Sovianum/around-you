@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -27,7 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
-import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.Position;
 
@@ -111,6 +109,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         super.onStop();
         locationManager.removeUpdates(onSelfLocationChangeListener);
         onDestPositionChangeListener = null;
+        Tracker.getInstance(this.getContext()).unSubscribe();
     }
 
     @Override

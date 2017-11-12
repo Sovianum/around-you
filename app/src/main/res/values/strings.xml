@@ -40,4 +40,7 @@
     <string name="income">Income</string>
     <string name="outcome">Outcome</string>
     <string name="can_not_meet_str">Вы не сможете встретиться с другими пользователями</string>
+    <string name="stop_tracking_str">Прекратите отслеживание текущего пользователя</string>
+    <string name="you_got_requests_template">Вы получили %d новых запросов \n</string>
+    <string name="request_accepted_template">%s принял ваш запрос. Началось отслеживание</string>
 </resources>

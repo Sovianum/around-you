@@ -23,9 +23,14 @@ import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
 import ru.mail.park.aroundyou.model.User;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
 import ru.mail.park.aroundyou.model.MeetRequest;
+import ru.mail.park.aroundyou.requests.Pusher;
 import ru.mail.park.aroundyou.requests.income.IncomeMeetRequestFragment;
 import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestFragment;
 import ru.mail.park.aroundyou.tracking.MapFragment;
+import ru.mail.park.aroundyou.tracking.Tracker;
+
+import static ru.mail.park.aroundyou.requests.income.IncomeMeetRequestAdapter.STATUS_ACCEPTED;
+import static ru.mail.park.aroundyou.requests.income.IncomeMeetRequestAdapter.STATUS_PENDING;
 
 public class MainActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
@@ -102,27 +107,58 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Pusher.PushListener pushListener = new Pusher.PushListener() {
+        @Override
+        public void onPush(List<MeetRequest> newRequests) {
+            int incomeCnt = 0;
+            MeetRequest acceptedRequest = null;
+
+            for (int i = 0; i != newRequests.size(); i++) {
+                MeetRequest request = newRequests.get(i);
+                if (request.getStatus().equals(STATUS_PENDING)) {
+                    incomeCnt++;
+                }
+                if (request.getStatus().equals(STATUS_ACCEPTED)) {
+                    acceptedRequest = request;
+                    Tracker.getInstance(MainActivity.this).startTracking(acceptedRequest.getRequestedId());
+                }
+            }
+
+            String msg = "";
+            if (incomeCnt > 0) {
+                msg += String.format(getString(R.string.you_got_requests_template), incomeCnt);
+            }
+            if (acceptedRequest != null) {
+                msg += String.format(getString(R.string.request_accepted_template), acceptedRequest.getRequestedLogin());
+            }
+            if (msg.length() > 0) {
+                Toast.makeText(
+                        MainActivity.this,
+                        msg,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
-        //getApplicationContext().deleteDatabase("AroundYouDB.db");
-
 
         neighbourFragment = getPreparedNeighbourFragment();
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
-        }
-        //neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
+        };
 
         if (neighboursHandlerDB != null) {
             neighboursHandlerDB.unregister();
         }
         neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
-
-
+        Pusher.getInstance().subscribe(pushListener);
 
         mapFragment = getPreparedMapFragment();
         outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
@@ -169,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
         if (neighboursHandlerDB != null) {
             neighboursHandlerDB.unregister();
         }
+
+        Pusher.getInstance().unSubscribe();
     }
 
     private void checkAuthorization() {

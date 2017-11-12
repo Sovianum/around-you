@@ -4,12 +4,8 @@ package ru.mail.park.aroundyou.tracking;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
@@ -33,6 +29,10 @@ public class Tracker {
 
     public void subscribe(PositionListener listener) {
         positionListener = listener;
+    }
+
+    public void unSubscribe() {
+        positionListener = null;
     }
 
     public int getCurrId() {

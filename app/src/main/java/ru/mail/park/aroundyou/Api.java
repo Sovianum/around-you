@@ -18,8 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -41,9 +43,14 @@ public class Api {
     private String token;
 
     private Api() {
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build();
+
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerInfo.BACKEND_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
                 .build();
         service = retrofit.create(LoaderService.class);
     }
@@ -208,6 +215,31 @@ public class Api {
             public void run() {
                 try {
                     final Response<ResponseBody> response = service.getIncomePendingRequests(token).execute();
+                    try (final ResponseBody responseBody = response.body()) {
+                        if (responseBody == null) {
+                            throw new IOException("Cannot get body");
+                        }
+                        final String body = responseBody.string();
+                        invokeSuccess(handler, parseMeetRequests(body));
+                    }
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
+    public ListenerHandler<OnSmthGetListener<List<MeetRequest>>>
+    getNewRequests(final OnSmthGetListener<List<MeetRequest>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<MeetRequest>>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response<ResponseBody> response = service
+                            .getNewRequests(token)
+                            .execute();
                     try (final ResponseBody responseBody = response.body()) {
                         if (responseBody == null) {
                             throw new IOException("Cannot get body");

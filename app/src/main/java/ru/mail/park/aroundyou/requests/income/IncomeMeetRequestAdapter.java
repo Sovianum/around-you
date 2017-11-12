@@ -27,6 +27,7 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
     public static final int HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
     public static final String STATUS_ACCEPTED = "ACCEPTED";
     public static final String STATUS_DECLINED = "DECLINED";
+    public static final String STATUS_PENDING = "PENDING";
 
     public static final int CARD_ID = R.layout.item_income_request_card;
     private List<MeetRequest> items;
@@ -81,6 +82,10 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         cardHolder.submitView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Tracker.getInstance(fragment.getContext()).isTracking()) {
+                    Toast.makeText(fragment.getContext(), R.string.stop_tracking_str, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 acceptHandler = updateMeetRequest(item.getId(), STATUS_ACCEPTED, acceptListener);
             }
         });
@@ -115,13 +120,11 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
     private void handleAcceptResponseCode(MeetRequest request) {
         String message = fragment.getString(R.string.request_accepted_str);
         Tracker.getInstance(fragment.getContext()).startTracking(request.getRequesterId());
-
         Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     private void handleDeclineResponseCode(MeetRequest request) {
         String message = fragment.getString(R.string.request_declined_str);
-
         Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
     }
 

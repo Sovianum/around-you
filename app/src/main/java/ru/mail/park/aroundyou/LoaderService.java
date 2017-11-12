@@ -45,7 +45,7 @@ public interface LoaderService {
     Call<ResponseBody> updateRequest(@Body MeetRequestUpdate update, @Header(ServerInfo.AUTH_HEADER) String token);
 
     @GET("api/v1/user/request/new")
-    Call<ResponseBody> getNewRequest();
+    Call<ResponseBody> getNewRequests(@Header(ServerInfo.AUTH_HEADER) String token);
 
 
 }
