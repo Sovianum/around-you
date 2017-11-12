@@ -146,9 +146,9 @@ public class Api {
         return handler;
     }
 
-    public ListenerHandler<OnSmthGetListener<Integer>>
-    updateMeetRequest(final MeetRequestUpdate update, final OnSmthGetListener<Integer> listener) {
-        final ListenerHandler<OnSmthGetListener<Integer>> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<MeetRequest>>
+    updateMeetRequest(final MeetRequestUpdate update, final OnSmthGetListener<MeetRequest> listener) {
+        final ListenerHandler<OnSmthGetListener<MeetRequest>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -156,8 +156,20 @@ public class Api {
                     final Response<ResponseBody> response = service
                             .updateRequest(update, token)
                             .execute();
-                    invokeSuccess(handler, response.code());
-                } catch (IOException e) {
+                    try (final ResponseBody responseBody = response.body()) {
+                        if (responseBody == null) {
+                            throw new IOException("Cannot get body");
+                        }
+                        final String body = responseBody.string();
+                        JSONObject jsonBody = new JSONObject(body);
+                        try {
+                            JSONObject jsonData = jsonBody.getJSONObject("data");
+                            invokeSuccess(handler, new MeetRequest(jsonData));
+                        } catch (JSONException e) {
+                            throw new IOException(jsonBody.getString("err_msg"));
+                        }
+                    }
+                } catch (IOException | JSONException | ParseException e) {
                     invokeError(handler, e);
                 }
             }
