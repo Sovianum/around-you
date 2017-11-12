@@ -19,9 +19,7 @@ import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.ReceivedData;
 import ru.mail.park.aroundyou.model.User;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class RegistrationFragment extends Fragment {
 
     private EditText loginText;

@@ -25,10 +25,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.mail.park.aroundyou.requests.MeetRequestItem;
-import ru.mail.park.aroundyou.model.Position;
 import ru.mail.park.aroundyou.model.User;
-import ru.mail.park.aroundyou.neighbours.NeighbourItem;
+import ru.mail.park.aroundyou.model.MeetRequest;
+import ru.mail.park.aroundyou.model.Position;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -77,9 +76,9 @@ public class Api {
         return handler;
     }
 
-    public ListenerHandler<OnSmthGetListener<List<NeighbourItem>>>
-    getNeighbours(final OnSmthGetListener<List<NeighbourItem>> listener) {
-        final ListenerHandler<OnSmthGetListener<List<NeighbourItem>>> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<List<User>>>
+    getNeighbours(final OnSmthGetListener<List<User>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<User>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -135,7 +134,7 @@ public class Api {
             public void run() {
                 try {
                     final Response<ResponseBody> response = service
-                            .createRequest(new MeetRequestItem(requestedId), token)
+                            .createRequest(new MeetRequest(requestedId), token)
                             .execute();
                     invokeSuccess(handler, response.code());
                 } catch (IOException e) {
@@ -146,9 +145,9 @@ public class Api {
         return handler;
     }
 
-    public ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>>
-    getOutcomePendingRequests(final OnSmthGetListener<List<MeetRequestItem>> listener) {
-        final ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<List<MeetRequest>>>
+    getOutcomePendingRequests(final OnSmthGetListener<List<MeetRequest>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<MeetRequest>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -169,9 +168,9 @@ public class Api {
         return handler;
     }
 
-    public ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>>
-    getIncomePendingRequests(final OnSmthGetListener<List<MeetRequestItem>> listener) {
-        final ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<List<MeetRequest>>>
+    getIncomePendingRequests(final OnSmthGetListener<List<MeetRequest>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<MeetRequest>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -251,19 +250,19 @@ public class Api {
         return handler;
     }
 
-    private List<NeighbourItem>
+    private List<User>
     parseNeighbours(final String body) throws IOException {
         try {
             //TODO: поправить это
             //JsonObject jsonArray = GSON.fromJson(body, JsonObject.class);
-            //Type collectionType = new TypeToken<List<NeighbourItem>>(){}.getType();
-            //List<NeighbourItem> users = GSON.fromJson(jsonArray.getAsJsonArray("data"), collectionType);
+            //Type collectionType = new TypeToken<List<User>>(){}.getType();
+            //List<User> users = GSON.fromJson(jsonArray.getAsJsonArray("data"), collectionType);
             //return users;
-            final List<NeighbourItem> receivedNeighbourList = new ArrayList<>();
+            final List<User> receivedNeighbourList = new ArrayList<>();
             JSONObject bodyJSON = new JSONObject(body);
             JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);
             for (int i = 0; i < array.length(); i++) {
-                receivedNeighbourList.add(new NeighbourItem(array.getJSONObject(i)));
+                receivedNeighbourList.add(new User(array.getJSONObject(i)));
             }
             return receivedNeighbourList;
         } catch (JsonSyntaxException | JSONException e) {
@@ -281,14 +280,14 @@ public class Api {
         }
     }
 
-    private List<MeetRequestItem>
+    private List<MeetRequest>
     parseMeetRequests(final String body) throws IOException {
         try {
-            final List<MeetRequestItem> receivedRequestList = new ArrayList<>();
+            final List<MeetRequest> receivedRequestList = new ArrayList<>();
             JSONObject bodyJSON = new JSONObject(body);
             JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);
             for (int i = 0; i < array.length(); i++) {
-                receivedRequestList.add(new MeetRequestItem(array.getJSONObject(i)));
+                receivedRequestList.add(new MeetRequest(array.getJSONObject(i)));
             }
             return receivedRequestList;
         } catch (JsonSyntaxException | JSONException | ParseException e) {

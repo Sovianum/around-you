@@ -12,18 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestAdapter;
+import ru.mail.park.aroundyou.model.MeetRequest;
 
 abstract public class MeetRequestFragment extends Fragment {
     protected MeetRequestAdapter adapter;
     protected RecyclerView recyclerView;
     protected SwipeRefreshLayout swipeRefreshLayout;
-    protected Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener;
+    protected Api.OnSmthGetListener<List<MeetRequest>> onRequestsGetListener;
 
     @Nullable
     @Override
@@ -61,13 +60,13 @@ abstract public class MeetRequestFragment extends Fragment {
         }
     }
 
-    public void loadItems(List<MeetRequestItem> items) {
+    public void loadItems(List<MeetRequest> items) {
         if (adapter != null) {
             adapter.setItems(items);
         }
     }
 
-    public void setListener(Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener) {
+    public void setListener(Api.OnSmthGetListener<List<MeetRequest>> onRequestsGetListener) {
         this.onRequestsGetListener = onRequestsGetListener;
     }
 

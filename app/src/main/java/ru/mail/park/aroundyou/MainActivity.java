@@ -20,9 +20,9 @@ import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
 import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
-import ru.mail.park.aroundyou.neighbours.NeighbourItem;
+import ru.mail.park.aroundyou.model.User;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
-import ru.mail.park.aroundyou.requests.MeetRequestItem;
+import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.requests.income.IncomeMeetRequestFragment;
 import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestFragment;
 import ru.mail.park.aroundyou.tracking.MapFragment;
@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity {
     private MeetRequestFragment outcomeRequestsFragment;
     private MeetRequestFragment incomeRequestsFragment;
     private Fragment activeFragment;
-    private ListenerHandler<Api.OnSmthGetListener<List<NeighbourItem>>> neighboursHandler;
+    private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
 
-    private Api.OnSmthGetListener<List<NeighbourItem>> neighboursListener = new Api.OnSmthGetListener<List<NeighbourItem>>() {
+    private Api.OnSmthGetListener<List<User>> neighboursListener = new Api.OnSmthGetListener<List<User>>() {
         @Override
-        public void onSuccess(List<NeighbourItem> neighbourItems) {
+        public void onSuccess(List<User> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
             neighbourFragment.setRefreshing(false);
         }
@@ -53,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Api.OnSmthGetListener<List<MeetRequestItem>> onGetOutcomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequestItem>>() {
+    private Api.OnSmthGetListener<List<MeetRequest>> onGetOutcomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequest>>() {
 
         @Override
-        public void onSuccess(List<MeetRequestItem> items) {
+        public void onSuccess(List<MeetRequest> items) {
             outcomeRequestsFragment.loadItems(items);
             outcomeRequestsFragment.setRefreshing(false);
         }
@@ -69,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Api.OnSmthGetListener<List<MeetRequestItem>> onGetIncomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequestItem>>() {
+    private Api.OnSmthGetListener<List<MeetRequest>> onGetIncomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequest>>() {
 
         @Override
-        public void onSuccess(List<MeetRequestItem> items) {
+        public void onSuccess(List<MeetRequest> items) {
             incomeRequestsFragment.loadItems(items);
             incomeRequestsFragment.setRefreshing(false);
         }

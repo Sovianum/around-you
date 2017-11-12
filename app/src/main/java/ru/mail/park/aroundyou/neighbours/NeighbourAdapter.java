@@ -16,13 +16,14 @@ import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
+import ru.mail.park.aroundyou.model.User;
 
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static int CARD_ID = R.layout.item_neighbour_card;
-    private List<NeighbourItem> items;
+    private List<User> items;
     private NeighbourFragment fragment;
     private ListenerHandler<Api.OnSmthGetListener<Integer>> requestHandler;
 
@@ -70,18 +71,18 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public NeighbourAdapter(NeighbourFragment fragment, List<NeighbourItem> items) {
+    public NeighbourAdapter(NeighbourFragment fragment, List<User> items) {
         this.fragment = fragment;
         this.items = items;
         notifyDataSetChanged();
     }
 
-    public void setItems(List<NeighbourItem> items) {
+    public void setItems(List<User> items) {
         this.items = items;
         notifyDataSetChanged();
     }
 
-    public List<NeighbourItem> getItems() {
+    public List<User> getItems() {
         return this.items;
     }
 
@@ -94,7 +95,7 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final NeighbourItem item = items.get(position);
+        final User item = items.get(position);
 
         final CardViewHolder cardHolder = (CardViewHolder) holder;
         cardHolder.loginView.setText(item.getLogin());

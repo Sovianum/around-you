@@ -1,29 +1,73 @@
 package ru.mail.park.aroundyou.model;
 
-public class User {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+
+
+public class User implements Serializable {
     private String login;
     private String password;
-    private String about;
-    private Integer age;
     private String sex;
+    private String about;
+    private int age;
+    private int id;
 
-    public void setPassword(String password) {
-        this.password = password;
+    public User() {}
+
+    public User(String login, String sex, String about, int age) {
+        this.login = login;
+        this.sex = sex;
+        this.about = about;
+        this.age = age;
+    }
+
+    public User(JSONObject neighbourJSON) throws JSONException {
+        this.login = neighbourJSON.getString("login");
+        this.sex = neighbourJSON.getString("sex");
+        this.about = neighbourJSON.getString("about");
+        this.age = neighbourJSON.getInt("age");
+        this.id = neighbourJSON.getInt("id");
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public void setLogin(String login) {
         this.login = login;
     }
 
-    public void setAbout(String about) {
-        this.about = about;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public String getSex() {
+        return sex;
     }
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

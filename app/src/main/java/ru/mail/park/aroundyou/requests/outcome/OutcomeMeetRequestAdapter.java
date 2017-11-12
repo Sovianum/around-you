@@ -11,13 +11,13 @@ import java.util.List;
 
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
-import ru.mail.park.aroundyou.requests.MeetRequestItem;
+import ru.mail.park.aroundyou.model.MeetRequest;
 
 public class OutcomeMeetRequestAdapter extends MeetRequestAdapter {
     public static final int CARD_ID = R.layout.item_outcome_request_card;
-    private List<MeetRequestItem> items;
+    private List<MeetRequest> items;
 
-    OutcomeMeetRequestAdapter(List<MeetRequestItem> items) {
+    OutcomeMeetRequestAdapter(List<MeetRequest> items) {
         this.items = items;
         notifyDataSetChanged();
     }
@@ -31,7 +31,7 @@ public class OutcomeMeetRequestAdapter extends MeetRequestAdapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        MeetRequestItem item = items.get(position);
+        MeetRequest item = items.get(position);
 
         OutcomeMeetRequestAdapter.CardViewHolder cardHolder = (OutcomeMeetRequestAdapter.CardViewHolder) holder;
         cardHolder.requestedLoginView.setText(item.getRequestedLogin());
@@ -44,7 +44,7 @@ public class OutcomeMeetRequestAdapter extends MeetRequestAdapter {
     }
 
     @Override
-    public void setItems(List<MeetRequestItem> items) {
+    public void setItems(List<MeetRequest> items) {
         this.items = items;
         notifyDataSetChanged();
     }

@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou.requests;
+package ru.mail.park.aroundyou.model;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,9 +8,7 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
-import ru.mail.park.aroundyou.model.Common;
-
-public class MeetRequestItem {
+public class MeetRequest {
     private int id;
     @SerializedName("requester_id")
     private int requesterId;
@@ -25,7 +23,7 @@ public class MeetRequestItem {
     private Timestamp time;
     private String status;
 
-    public MeetRequestItem(JSONObject jsonObject) throws JSONException, ParseException {
+    public MeetRequest(JSONObject jsonObject) throws JSONException, ParseException {
         id = jsonObject.getInt("id");
         requestedId = jsonObject.getInt("requested_id");
         requesterId = jsonObject.getInt("requester_id");
@@ -36,7 +34,7 @@ public class MeetRequestItem {
         time = Common.extractTimestamp("time", jsonObject);
     }
 
-    public MeetRequestItem(int requestedId) {
+    public MeetRequest(int requestedId) {
         this.requestedId = requestedId;
     }
 

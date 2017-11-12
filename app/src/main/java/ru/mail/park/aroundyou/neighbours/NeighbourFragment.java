@@ -16,12 +16,13 @@ import java.util.List;
 
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.R;
+import ru.mail.park.aroundyou.model.User;
 
 public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener;
+    private Api.OnSmthGetListener<List<User>> onNeighboursGetListener;
 
     @Nullable
     @Override
@@ -32,7 +33,7 @@ public class NeighbourFragment extends Fragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
 
-        adapter = new NeighbourAdapter(this, new ArrayList<NeighbourItem>());
+        adapter = new NeighbourAdapter(this, new ArrayList<User>());
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -55,13 +56,13 @@ public class NeighbourFragment extends Fragment {
         }
     }
 
-    public void loadItems(List<NeighbourItem> items) {
+    public void loadItems(List<User> items) {
         if (adapter != null) {
             adapter.setItems(items);
         }
     }
 
-    public void setListener(Api.OnSmthGetListener<List<NeighbourItem>> onNeighboursGetListener) {
+    public void setListener(Api.OnSmthGetListener<List<User>> onNeighboursGetListener) {
         this.onNeighboursGetListener = onNeighboursGetListener;
     }
 

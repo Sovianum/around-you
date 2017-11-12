@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
-import ru.mail.park.aroundyou.requests.MeetRequestItem;
+import ru.mail.park.aroundyou.model.MeetRequest;
 
 public class OutcomeMeetRequestFragment extends MeetRequestFragment {
     @Override
     protected MeetRequestAdapter getAdapter() {
-        return new OutcomeMeetRequestAdapter(new ArrayList<MeetRequestItem>());
+        return new OutcomeMeetRequestAdapter(new ArrayList<MeetRequest>());
     }
 
     @Override
