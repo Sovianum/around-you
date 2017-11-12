@@ -20,6 +20,8 @@ public class MeetRequestItem {
     private String requesterLogin;
     @SerializedName("requested_login")
     private String requestedLogin;
+    @SerializedName("requester_about")
+    private String requesterAbout;
     private Timestamp time;
     private String status;
 
@@ -29,6 +31,7 @@ public class MeetRequestItem {
         requesterId = jsonObject.getInt("requester_id");
         requestedLogin = jsonObject.getString("requested_login");
         requesterLogin = jsonObject.getString("requester_login");
+        requesterAbout = jsonObject.getString("requester_about");
         status = jsonObject.getString("status");
         time = Common.extractTimestamp("time", jsonObject);
     }
@@ -43,6 +46,10 @@ public class MeetRequestItem {
 
     public String getRequestedLogin() {
         return requestedLogin;
+    }
+
+    public String getRequesterAbout() {
+        return requesterAbout;
     }
 
     public int getId() {

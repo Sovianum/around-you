@@ -20,10 +20,10 @@ import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestAdapter;
 
 abstract public class MeetRequestFragment extends Fragment {
-    private MeetRequestAdapter adapter;
-    private RecyclerView recyclerView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener;
+    protected MeetRequestAdapter adapter;
+    protected RecyclerView recyclerView;
+    protected SwipeRefreshLayout swipeRefreshLayout;
+    protected Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener;
 
     @Nullable
     @Override
@@ -53,6 +53,8 @@ abstract public class MeetRequestFragment extends Fragment {
 
     abstract protected MeetRequestAdapter getAdapter();
 
+    abstract protected void refreshItems();
+
     public void setRefreshing(boolean refreshing) {
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(refreshing);
@@ -67,10 +69,6 @@ abstract public class MeetRequestFragment extends Fragment {
 
     public void setListener(Api.OnSmthGetListener<List<MeetRequestItem>> onRequestsGetListener) {
         this.onRequestsGetListener = onRequestsGetListener;
-    }
-
-    private void refreshItems() {
-        Api.getInstance().getOutcomePendingRequests(onRequestsGetListener);
     }
 
     private void onItemsLoadComplete() {

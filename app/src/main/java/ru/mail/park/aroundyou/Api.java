@@ -169,6 +169,29 @@ public class Api {
         return handler;
     }
 
+    public ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>>
+    getIncomePendingRequests(final OnSmthGetListener<List<MeetRequestItem>> listener) {
+        final ListenerHandler<OnSmthGetListener<List<MeetRequestItem>>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response<ResponseBody> response = service.getIncomePendingRequests(token).execute();
+                    try (final ResponseBody responseBody = response.body()) {
+                        if (responseBody == null) {
+                            throw new IOException("Cannot get body");
+                        }
+                        final String body = responseBody.string();
+                        invokeSuccess(handler, parseMeetRequests(body));
+                    }
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
     public ListenerHandler<OnSmthGetListener<ReceivedData>>
     loginUser(final OnSmthGetListener<ReceivedData> listener, final User user) {
         final ListenerHandler<OnSmthGetListener<ReceivedData>> handler = new ListenerHandler<>(listener);

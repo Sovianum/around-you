@@ -23,6 +23,7 @@ import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
 import ru.mail.park.aroundyou.neighbours.NeighbourItem;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
 import ru.mail.park.aroundyou.requests.MeetRequestItem;
+import ru.mail.park.aroundyou.requests.income.IncomeMeetRequestFragment;
 import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestFragment;
 import ru.mail.park.aroundyou.tracking.MapFragment;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private NeighbourFragment neighbourFragment;
     private MapFragment mapFragment;
     private MeetRequestFragment outcomeRequestsFragment;
+    private MeetRequestFragment incomeRequestsFragment;
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<NeighbourItem>>> neighboursHandler;
 
@@ -67,6 +69,22 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Api.OnSmthGetListener<List<MeetRequestItem>> onGetIncomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequestItem>>() {
+
+        @Override
+        public void onSuccess(List<MeetRequestItem> items) {
+            incomeRequestsFragment.loadItems(items);
+            incomeRequestsFragment.setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            incomeRequestsFragment.setRefreshing(false);
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -80,8 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
         neighbourFragment = getPreparedNeighbourFragment();
         mapFragment = getPreparedMapFragment();
-        outcomeRequestsFragment = getPreparedOutcomeRequestFragment();
-        selectFragment(mapFragment);
+        outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
+        incomeRequestsFragment = getPreparedIncomeRequestsFragment();
+        selectFragment(incomeRequestsFragment);
 
         nav = findViewById(R.id.bottom_navigation);
         nav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -91,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        nav.setSelectedItemId(R.id.action_map);
+        nav.setSelectedItemId(R.id.action_income_requests);
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
@@ -102,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 selectFragment(outcomeRequestsFragment);
                 break;
             case R.id.action_income_requests:
+                selectFragment(incomeRequestsFragment);
                 break;
             case R.id.action_neighbours:
                 selectFragment(neighbourFragment);
@@ -133,7 +153,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private MeetRequestFragment getPreparedOutcomeRequestFragment() {
+    private MeetRequestFragment getPreparedIncomeRequestsFragment() {
+        if (incomeRequestsFragment != null) {
+            return incomeRequestsFragment;
+        }
+        MeetRequestFragment fragment = new IncomeMeetRequestFragment();
+        fragment.setListener(onGetIncomeRequestsListener);
+        return fragment;
+    }
+
+    private MeetRequestFragment getPreparedOutcomeRequestsFragment() {
         if (outcomeRequestsFragment != null) {
             return outcomeRequestsFragment;
         }
