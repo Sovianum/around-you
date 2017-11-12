@@ -42,7 +42,7 @@ public class NeighbourFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshCachedItems();
+                refreshItems();
             }
         });
 

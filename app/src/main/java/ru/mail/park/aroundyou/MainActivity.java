@@ -110,17 +110,20 @@ public class MainActivity extends AppCompatActivity {
         checkAuthorization();
         //getApplicationContext().deleteDatabase("AroundYouDB.db");
 
+
+        neighbourFragment = getPreparedNeighbourFragment();
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
         }
-        neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
+        //neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
 
         if (neighboursHandlerDB != null) {
             neighboursHandlerDB.unregister();
         }
         neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
 
-        neighbourFragment = getPreparedNeighbourFragment();
+
+
         mapFragment = getPreparedMapFragment();
         outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
         incomeRequestsFragment = getPreparedIncomeRequestsFragment();
