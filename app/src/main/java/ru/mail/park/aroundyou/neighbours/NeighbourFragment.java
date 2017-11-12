@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.mail.park.aroundyou.Api;
+import ru.mail.park.aroundyou.DBApi;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.User;
 
@@ -23,6 +24,7 @@ public class NeighbourFragment extends Fragment {
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Api.OnSmthGetListener<List<User>> onNeighboursGetListener;
+    private DBApi.OnDBDataGetListener<List<User>> onNeighboursGetListenerDB;
 
     @Nullable
     @Override
@@ -40,7 +42,7 @@ public class NeighbourFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshItems();
+                refreshCachedItems();
             }
         });
 
@@ -66,8 +68,16 @@ public class NeighbourFragment extends Fragment {
         this.onNeighboursGetListener = onNeighboursGetListener;
     }
 
+    public void setListenerDB(DBApi.OnDBDataGetListener<List<User>> onNeighboursGetListenerDB) {
+        this.onNeighboursGetListenerDB = onNeighboursGetListenerDB;
+    }
+
     private void refreshItems() {
         Api.getInstance().getNeighbours(onNeighboursGetListener);
+    }
+
+    private void refreshCachedItems() {
+        DBApi.getInstance(getActivity().getApplicationContext()).getNeighbours(onNeighboursGetListenerDB);
     }
 
     private void onItemsLoadComplete() {

@@ -16,11 +16,12 @@ public class User implements Serializable {
 
     public User() {}
 
-    public User(String login, String sex, String about, int age) {
+    public User(String login, String sex, String about, int age, int id) {
         this.login = login;
         this.sex = sex;
         this.about = about;
         this.age = age;
+        this.id = id;
     }
 
     public User(JSONObject neighbourJSON) throws JSONException {

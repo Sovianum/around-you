@@ -37,11 +37,13 @@ public class MainActivity extends AppCompatActivity {
     private MeetRequestFragment incomeRequestsFragment;
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
+    private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
 
     private Api.OnSmthGetListener<List<User>> neighboursListener = new Api.OnSmthGetListener<List<User>>() {
         @Override
         public void onSuccess(List<User> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
+            cacheNeighbours(neighbourItems);
             neighbourFragment.setRefreshing(false);
         }
 
@@ -85,16 +87,38 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private DBApi.OnDBDataGetListener<List<User>> neighboursListenerDB = new DBApi.OnDBDataGetListener<List<User>>() {
+        @Override
+        public void onSuccess(List<User> items) {
+            neighbourFragment.loadItems(items);
+            neighbourFragment.setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            neighbourFragment.setRefreshing(false);
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
+        //getApplicationContext().deleteDatabase("AroundYouDB.db");
+
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
         }
         neighboursHandler = Api.getInstance().getNeighbours(neighboursListener);
+
+        if (neighboursHandlerDB != null) {
+            neighboursHandlerDB.unregister();
+        }
+        neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
 
         neighbourFragment = getPreparedNeighbourFragment();
         mapFragment = getPreparedMapFragment();
@@ -138,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
         if (neighboursHandler != null) {
             neighboursHandler.unregister();
         }
+
+        if (neighboursHandlerDB != null) {
+            neighboursHandlerDB.unregister();
+        }
     }
 
     private void checkAuthorization() {
@@ -178,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
         }
         NeighbourFragment fragment = new NeighbourFragment();
         fragment.setListener(neighboursListener);
+        fragment.setListenerDB(neighboursListenerDB);
         return fragment;
     }
 
@@ -207,5 +236,9 @@ public class MainActivity extends AppCompatActivity {
         activeFragment = fragment;
         fragmentTransaction.add(R.id.fragment_container, activeFragment);
         fragmentTransaction.commit();
+    }
+
+    public void cacheNeighbours(List<User> neighbourItems) {
+        DBApi.getInstance(this).insertNeighbours(neighbourItems);
     }
 }
