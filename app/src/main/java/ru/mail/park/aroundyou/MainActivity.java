@@ -38,12 +38,14 @@ public class MainActivity extends AppCompatActivity {
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
     private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
+    private ListenerHandler<DBApi.OnDBDataGetListener<User>> userHandler;
 
     private Api.OnSmthGetListener<List<User>> neighboursListener = new Api.OnSmthGetListener<List<User>>() {
         @Override
         public void onSuccess(List<User> neighbourItems) {
             neighbourFragment.loadItems(neighbourItems);
             cacheNeighbours(neighbourItems);
+            cacheUsers(neighbourItems);
             neighbourFragment.setRefreshing(false);
         }
 
@@ -102,13 +104,24 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private DBApi.OnDBDataGetListener<User> userListenerDB = new DBApi.OnDBDataGetListener<User>() {
+        @Override
+        public void onSuccess(User user) {
+        }
+
+        @Override
+        public void onError(Exception error) {
+            //если нет в базе, тогда будем запрашивать из сети
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
-        //getApplicationContext().deleteDatabase("AroundYouDB.db");
+        getApplicationContext().deleteDatabase("AroundYouDB.db");
 
 
         neighbourFragment = getPreparedNeighbourFragment();
@@ -121,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
             neighboursHandlerDB.unregister();
         }
         neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
+
+
+        userHandler = DBApi.getInstance(this).getUser(userListenerDB, 3);
 
 
 
@@ -168,6 +184,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (neighboursHandlerDB != null) {
             neighboursHandlerDB.unregister();
+        }
+
+        if (userHandler != null) {
+            userHandler.unregister();
         }
     }
 
@@ -243,5 +263,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void cacheNeighbours(List<User> neighbourItems) {
         DBApi.getInstance(this).insertNeighbours(neighbourItems);
+    }
+
+    public void cacheUsers(List<User> users) {
+        DBApi.getInstance(this).insertUsers(users);
     }
 }

@@ -34,6 +34,19 @@ public class MeetRequest {
         time = Common.extractTimestamp("time", jsonObject);
     }
 
+    public MeetRequest(int id, int requesterId, int requestedId, String requesterLogin,
+                       String requestedLogin, String requesterAbout, Timestamp time, String status) {
+        this.id = id;
+        this.requestedId = requesterId;
+        this.requesterId = requesterId;
+        this.requesterLogin = requesterLogin;
+        this.requestedLogin = requestedLogin;
+        this.requesterAbout = requesterAbout;
+        this.time = time;
+        this.status = status;
+
+    }
+
     public MeetRequest(int requestedId) {
         this.requestedId = requestedId;
     }
