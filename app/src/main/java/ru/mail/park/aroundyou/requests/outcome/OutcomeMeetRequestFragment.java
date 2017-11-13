@@ -3,9 +3,10 @@ package ru.mail.park.aroundyou.requests.outcome;
 import java.util.ArrayList;
 
 import ru.mail.park.aroundyou.Api;
+import ru.mail.park.aroundyou.MemCache;
+import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
-import ru.mail.park.aroundyou.model.MeetRequest;
 
 public class OutcomeMeetRequestFragment extends MeetRequestFragment {
     @Override
@@ -15,6 +16,10 @@ public class OutcomeMeetRequestFragment extends MeetRequestFragment {
 
     @Override
     protected void refreshItems() {
+        if (!MemCache.getInstance().isEmptyOutcome()) {
+            this.loadItems(MemCache.getInstance().getOutcomeRequests());
+            this.setRefreshing(false);
+        }
         Api.getInstance().getOutcomePendingRequests(onRequestsGetListener);
     }
 }

@@ -16,18 +16,48 @@ public class MemCache {
         return INSTANCE;
     }
 
-    private static List<MeetRequest> requests = new ArrayList<>();
+    private static List<MeetRequest> incomeRequests = new ArrayList<>();
+    private static List<MeetRequest> outcomeRequests = new ArrayList<>();
+
+    private static boolean isActualIncome;
+    private static boolean isActualOutcome;
 
 
-    public static synchronized void addRequests(List<MeetRequest> requests) {
-        MemCache.requests.addAll(requests);
+    public static synchronized void clearAndAddIncomeRequests(List<MeetRequest> requests) {
+        MemCache.incomeRequests.clear();
+        MemCache.incomeRequests.addAll(requests);
     }
 
-    public static synchronized void clearRequests() {
-        requests.clear();
+    public static synchronized void clearIncomeRequests() {
+        incomeRequests.clear();
     }
 
-    public synchronized List<MeetRequest> getRequests() {
-        return requests;
+    public synchronized List<MeetRequest> getIncomeRequests() {
+        return incomeRequests;
+    }
+
+    public static synchronized void clearAndAddOutcomeRequests(List<MeetRequest> requests) {
+        MemCache.outcomeRequests.clear();
+        MemCache.outcomeRequests.addAll(requests);
+    }
+
+    public static synchronized void clearOutcomeRequests() {
+        outcomeRequests.clear();
+    }
+
+    public synchronized List<MeetRequest> getOutcomeRequests() {
+        return outcomeRequests;
+    }
+
+    public boolean isEmptyIncome() {
+        return isEmpty(incomeRequests);
+    }
+
+    public boolean isEmptyOutcome() {
+        return isEmpty(outcomeRequests);
+    }
+
+    public boolean isEmpty(List<MeetRequest> requests) {
+        return requests == null || requests.size() == 0;
     }
 }

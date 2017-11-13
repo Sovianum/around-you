@@ -3,6 +3,7 @@ package ru.mail.park.aroundyou.requests.income;
 import java.util.ArrayList;
 
 import ru.mail.park.aroundyou.Api;
+import ru.mail.park.aroundyou.MemCache;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
 import ru.mail.park.aroundyou.model.MeetRequest;
@@ -15,6 +16,10 @@ public class IncomeMeetRequestFragment extends MeetRequestFragment {
 
     @Override
     protected void refreshItems() {
+        if (!MemCache.getInstance().isEmptyIncome()) {
+            this.loadItems(MemCache.getInstance().getIncomeRequests());
+            this.setRefreshing(false);
+        }
         Api.getInstance().getIncomePendingRequests(onRequestsGetListener);
     }
 }

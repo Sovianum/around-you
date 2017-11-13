@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onSuccess(List<MeetRequest> items) {
+            MemCache.clearAndAddOutcomeRequests(items);
             outcomeRequestsFragment.loadItems(items);
             outcomeRequestsFragment.setRefreshing(false);
         }
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onSuccess(List<MeetRequest> items) {
+            MemCache.clearAndAddIncomeRequests(items);
             incomeRequestsFragment.loadItems(items);
             incomeRequestsFragment.setRefreshing(false);
         }
