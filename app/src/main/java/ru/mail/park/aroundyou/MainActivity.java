@@ -32,6 +32,7 @@ import ru.mail.park.aroundyou.requests.income.IncomeMeetRequestFragment;
 import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestFragment;
 import ru.mail.park.aroundyou.tracking.MapFragment;
 import ru.mail.park.aroundyou.tracking.Tracker;
+import ru.mail.park.aroundyou.user.UserFragment;
 
 import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_ACCEPTED;
 import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_INTERRUPTED;
@@ -41,10 +42,13 @@ public class MainActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
 
     private BottomNavigationView nav;
+
     private NeighbourFragment neighbourFragment;
     private MapFragment mapFragment;
     private MeetRequestFragment outcomeRequestsFragment;
     private MeetRequestFragment incomeRequestsFragment;
+    private UserFragment userFragment;
+
     private Fragment activeFragment;
     private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
     private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
@@ -187,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         mapFragment = getPreparedMapFragment();
         outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
         incomeRequestsFragment = getPreparedIncomeRequestsFragment();
+        userFragment = new UserFragment();
         selectFragment(incomeRequestsFragment);
 
         nav = findViewById(R.id.bottom_navigation);
@@ -220,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_profile:
+                selectFragment(userFragment);
                 break;
             case R.id.action_outcome_requests:
                 selectFragment(outcomeRequestsFragment);

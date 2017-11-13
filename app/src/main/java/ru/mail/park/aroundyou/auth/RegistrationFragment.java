@@ -60,13 +60,21 @@ public class RegistrationFragment extends Fragment {
                 int age = Integer.parseInt(ageText.getText().toString());   // TODO: 11/6/17 add handlers in case of failed parse
                 userStub.setAge(age);
 
-                progressBar.setVisibility(View.VISIBLE);
+                setLoading(true);
                 handler = Api.getInstance().registerUser(onDataGetListener, userStub);
             }
         });
 
         linkToLogin.setOnClickListener(onClickListener);
         return view;
+    }
+
+    public void setLoading(boolean loading) {
+        if (loading) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void setOnClickListener(View.OnClickListener listener) {
