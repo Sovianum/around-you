@@ -54,6 +54,14 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+    public void setLoading(boolean loading) {
+        if (loading) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
     public void setOnClickListener(View.OnClickListener listener) {
         this.onClickListener = listener;
     }

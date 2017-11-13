@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import ru.mail.park.aroundyou.datasource.Api;
 import ru.mail.park.aroundyou.common.ListenerHandler;
@@ -32,11 +33,14 @@ public class AuthActivity extends AppCompatActivity {
             if (response.getData() != null) {
                 onGettingToken(response.getData());
             }
+            loginFragment.setLoading(false);
         }
 
         @Override
         public void onError(Exception error) {
             Log.e(AuthActivity.class.getName(), error.toString());
+            Toast.makeText(AuthActivity.this, R.string.failed_to_authorize_str, Toast.LENGTH_SHORT).show();
+            loginFragment.setLoading(false);
         }
     };
 
@@ -45,12 +49,14 @@ public class AuthActivity extends AppCompatActivity {
         public void onSuccess(ServerResponse<String> response) {
             if (response.getData() != null) {
                 onGettingToken(response.getData());
+                loginFragment.setLoading(false);
             }
         }
 
         @Override
         public void onError(Exception error) {
             Log.e(AuthActivity.class.getName(), error.toString());
+            loginFragment.setLoading(false);
         }
     };
 

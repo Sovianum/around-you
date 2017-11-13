@@ -47,4 +47,6 @@
     <string name="not_tracking_str">Некого отслеживать</string>
     <string name="tracking_stopped_str">Отслеживание остановлено</string>
     <string name="interrupted_str">Ваш собеседник прервал отслеживание</string>
+    <string name="logout_str">Выйти</string>
+    <string name="failed_to_authorize_str">Неверная пара логин/пароль</string>
 </resources>
