@@ -31,7 +31,7 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
 
     public static final int CARD_ID = R.layout.item_income_request_card;
     private List<MeetRequest> items;
-    private Fragment fragment;
+    private IncomeMeetRequestFragment fragment;
     private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> acceptHandler;
     private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> declineHandler;
 
@@ -39,11 +39,13 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         @Override
         public void onSuccess(MeetRequest payload) {
             handleAcceptResponseCode(payload);
+            fragment.setRefreshing(false);
         }
 
         @Override
         public void onError(Exception error) {
             handleAcceptError(error);
+            fragment.setRefreshing(false);
         }
     };
 
@@ -51,15 +53,17 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         @Override
         public void onSuccess(MeetRequest payload) {
             handleDeclineResponseCode(payload);
+            fragment.setRefreshing(false);
         }
 
         @Override
         public void onError(Exception error) {
             handleDeclineError(error);
+            fragment.setRefreshing(false);
         }
     };
 
-    public IncomeMeetRequestAdapter(Fragment fragment, List<MeetRequest> items) {
+    public IncomeMeetRequestAdapter(IncomeMeetRequestFragment fragment, List<MeetRequest> items) {
         this.items = items;
         this.fragment = fragment;
         notifyDataSetChanged();
@@ -86,6 +90,7 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
                     Toast.makeText(fragment.getContext(), R.string.stop_tracking_str, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                fragment.setRefreshing(true);
                 acceptHandler = updateMeetRequest(item.getId(), STATUS_ACCEPTED, acceptListener);
             }
         });
@@ -93,6 +98,7 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
         cardHolder.declineView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fragment.setRefreshing(true);
                 declineHandler = updateMeetRequest(item.getId(), STATUS_DECLINED, declineListener);
             }
         });
