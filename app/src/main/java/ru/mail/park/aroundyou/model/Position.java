@@ -15,15 +15,12 @@ public class Position {
     private Point point;
     private Timestamp time;
 
-    public Position(double x, double y) {
-        point = new Point(x, y);
+    public Position() {
+        point = new Point();
     }
 
-    public Position(JSONObject jsonObject) throws JSONException, ParseException {
-        id = jsonObject.getInt("id");
-        userId = jsonObject.getInt("user_id");
-        time = Common.extractTimestamp("time", jsonObject);
-        point = new Point(jsonObject.getJSONObject("point"));
+    public Position(double x, double y) {
+        point = new Point(x, y);
     }
 
     public int getId() {
@@ -61,6 +58,8 @@ public class Position {
     public class Point {
         private double x;
         private double y;
+
+        public Point() {}
 
         public Point(double x, double y) {
             this.x = x;

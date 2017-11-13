@@ -24,14 +24,6 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public User(JSONObject neighbourJSON) throws JSONException {
-        this.login = neighbourJSON.getString("login");
-        this.sex = neighbourJSON.getString("sex");
-        this.about = neighbourJSON.getString("about");
-        this.age = neighbourJSON.getInt("age");
-        this.id = neighbourJSON.getInt("id");
-    }
-
     public int getId() {
         return id;
     }

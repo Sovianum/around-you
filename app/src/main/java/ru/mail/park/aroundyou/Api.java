@@ -6,15 +6,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -27,10 +20,11 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.mail.park.aroundyou.model.MeetRequestUpdate;
-import ru.mail.park.aroundyou.model.User;
 import ru.mail.park.aroundyou.model.MeetRequest;
+import ru.mail.park.aroundyou.model.MeetRequestUpdate;
 import ru.mail.park.aroundyou.model.Position;
+import ru.mail.park.aroundyou.model.ServerResponse;
+import ru.mail.park.aroundyou.model.User;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -71,14 +65,14 @@ public class Api {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final Response<ResponseBody> response = service
-                            .savePosition(token, position)
-                            .execute();
-                    invokeSuccess(handler, response.code());
-                } catch (IOException e) {
-                    invokeError(handler, e);
-                }
+            try {
+                final Response<ResponseBody> response = service
+                        .savePosition(token, position)
+                        .execute();
+                invokeSuccess(handler, response.code());
+            } catch (IOException e) {
+                invokeError(handler, e);
+            }
             }
         });
         return handler;
@@ -90,21 +84,22 @@ public class Api {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final Response<ResponseBody> response = service.getNeighbours(token).execute();
-                    if (response.code() != HTTP_OK) {
-                        throw new IOException("HTTP code " + response.code());
-                    }
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        invokeSuccess(handler, parseNeighbours(body));
-                    }
-                } catch (IOException e) {
-                    invokeError(handler, e);
+            try {
+                final Response<ServerResponse<List<User>>> response = service.getNeighbours(token).execute();
+                if (response.code() != HTTP_OK) {
+                    throw new IOException("HTTP code " + response.code());
                 }
+                ServerResponse<List<User>> responseBody = response.body();
+                if (responseBody == null) {
+                    throw new IOException("Cannot get body");
+                }
+                if (responseBody.getData() == null) {
+                    throw new IOException(responseBody.getErrMsg());
+                }
+                invokeSuccess(handler, responseBody.getData());
+            } catch (IOException e) {
+                invokeError(handler, e);
+            }
             }
         });
         return handler;
@@ -116,19 +111,19 @@ public class Api {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final Response<ResponseBody> response = service.getNeighbourPosition(neighbourId, token).execute();
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        invokeSuccess(handler, parsePosition(body));
-                    }
-
-                } catch (IOException e) {
-                    invokeError(handler, e);
+            try {
+                final Response<ServerResponse<Position>> response = service.getNeighbourPosition(neighbourId, token).execute();
+                final ServerResponse<Position> responseBody = response.body();
+                if (responseBody == null) {
+                    throw new IOException("Cannot get body");
                 }
+
+                if (responseBody.getData() == null) {
+                    throw new IOException(responseBody.getErrMsg());
+                }
+            } catch (IOException e) {
+                invokeError(handler, e);
+            }
             }
         });
         return handler;
@@ -140,14 +135,14 @@ public class Api {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final Response<ResponseBody> response = service
-                            .createRequest(new MeetRequest(requestedId), token)
-                            .execute();
-                    invokeSuccess(handler, response.code());
-                } catch (IOException e) {
-                    invokeError(handler, e);
-                }
+            try {
+                final Response<ServerResponse<MeetRequest>> response =  service
+                        .createRequest(new MeetRequest(requestedId), token)
+                        .execute();
+                invokeSuccess(handler, response.code());
+            } catch (IOException e) {
+                invokeError(handler, e);
+            }
             }
         });
         return handler;
@@ -160,23 +155,18 @@ public class Api {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service
+                    final Response<ServerResponse<MeetRequest>> response = service
                             .updateRequest(update, token)
                             .execute();
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        JSONObject jsonBody = new JSONObject(body);
-                        try {
-                            JSONObject jsonData = jsonBody.getJSONObject("data");
-                            invokeSuccess(handler, new MeetRequest(jsonData));
-                        } catch (JSONException e) {
-                            throw new IOException(jsonBody.getString("err_msg"));
-                        }
+                    final ServerResponse<MeetRequest> responseBody = response.body();
+                    if (responseBody == null) {
+                        throw new IOException("Cannot get body");
                     }
-                } catch (IOException | JSONException | ParseException e) {
+                    if (responseBody.getData() == null) {
+                        throw new IOException(responseBody.getErrMsg());
+                    }
+                    invokeSuccess(handler, responseBody.getData());
+                } catch (IOException e) {
                     invokeError(handler, e);
                 }
             }
@@ -191,14 +181,19 @@ public class Api {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service.getOutcomePendingRequests(token).execute();
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        invokeSuccess(handler, parseMeetRequests(body));
+                    final Response<ServerResponse<List<MeetRequest>>>
+                            response = service.getOutcomePendingRequests(token).execute();
+
+                    final ServerResponse<List<MeetRequest>> body = response.body();
+                    if (body == null) {
+                        throw new IOException("Cannot get body");
                     }
+
+                    if (body.getData() == null) {
+                        throw new IOException(body.getErrMsg());
+                    }
+
+                    invokeSuccess(handler, body.getData());
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -214,14 +209,19 @@ public class Api {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service.getIncomePendingRequests(token).execute();
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        invokeSuccess(handler, parseMeetRequests(body));
+                    final Response<ServerResponse<List<MeetRequest>>>
+                            response = service.getIncomePendingRequests(token).execute();
+
+                    final ServerResponse<List<MeetRequest>> body = response.body();
+                    if (body == null) {
+                        throw new IOException("Cannot get body");
                     }
+
+                    if (body.getData() == null) {
+                        throw new IOException(body.getErrMsg());
+                    }
+
+                    invokeSuccess(handler, body.getData());
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -237,16 +237,19 @@ public class Api {
             @Override
             public void run() {
                 try {
-                    final Response<ResponseBody> response = service
-                            .getNewRequests(token)
-                            .execute();
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        invokeSuccess(handler, parseMeetRequests(body));
+                    final Response<ServerResponse<List<MeetRequest>>>
+                            response = service.getNewRequests(token).execute();
+
+                    final ServerResponse<List<MeetRequest>> body = response.body();
+                    if (body == null) {
+                        throw new IOException("Cannot get body");
                     }
+
+                    if (body.getData() == null) {
+                        throw new IOException(body.getErrMsg());
+                    }
+
+                    invokeSuccess(handler, body.getData());
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -255,9 +258,9 @@ public class Api {
         return handler;
     }
 
-    public ListenerHandler<OnSmthGetListener<ReceivedData>>
-    loginUser(final OnSmthGetListener<ReceivedData> listener, final User user) {
-        final ListenerHandler<OnSmthGetListener<ReceivedData>> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<ServerResponse<String>>>
+    loginUser(final OnSmthGetListener<ServerResponse<String>> listener, final User user) {
+        final ListenerHandler<OnSmthGetListener<ServerResponse<String>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -265,17 +268,15 @@ public class Api {
                     final String strRequestBody = GSON.toJson(user);
                     RequestBody requestBody =
                             RequestBody.create(MediaType.parse("text/plain"), strRequestBody);
-                    final Response<ResponseBody> response = service.loginUser(requestBody).execute();
+                    final Response<ServerResponse<String>> response = service.loginUser(requestBody).execute();
                     if (response.code() != HTTP_OK) {
                         throw new IOException("HTTP code " + response.code());
                     }
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        invokeSuccess(handler, parseLoginData(body));
+                    ServerResponse<String> responseBody = response.body();
+                    if (responseBody == null) {
+                        throw new IOException("Cannot get body");
                     }
+                    invokeSuccess(handler, responseBody);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -284,9 +285,9 @@ public class Api {
         return handler;
     }
 
-    public ListenerHandler<OnSmthGetListener<ReceivedData>>
-    registerUser(final OnSmthGetListener<ReceivedData> listener, final User user) {
-        final ListenerHandler<OnSmthGetListener<ReceivedData>> handler = new ListenerHandler<>(listener);
+    public ListenerHandler<OnSmthGetListener<ServerResponse<String>>>
+    registerUser(final OnSmthGetListener<ServerResponse<String>> listener, final User user) {
+        final ListenerHandler<OnSmthGetListener<ServerResponse<String>>> handler = new ListenerHandler<>(listener);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -294,74 +295,25 @@ public class Api {
                     final String strRequestBody = GSON.toJson(user);
                     RequestBody requestBody =
                             RequestBody.create(MediaType.parse("text/plain"), strRequestBody);
-                    final Response<ResponseBody> response = service.registerUser(requestBody).execute();
+                    final Response<ServerResponse<String>> response = service.registerUser(requestBody).execute();
                     if (response.code() != HTTP_OK) {
                         throw new IOException("HTTP code " + response.code());
                     }
-                    try (final ResponseBody responseBody = response.body()) {
-                        if (responseBody == null) {
-                            throw new IOException("Cannot get body");
-                        }
-                        final String body = responseBody.string();
-                        //invokeSuccess(handler, parseNeighbours(body));
-                        invokeSuccess(handler, parseLoginData(body));
+
+                    final ServerResponse<String> responseBody = response.body();
+                    if (responseBody == null) {
+                        throw new IOException("Cannot get body");
                     }
+                    if (responseBody.getData() == null) {
+                        throw new IOException(responseBody.getErrMsg());
+                    }
+                    invokeSuccess(handler, responseBody);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
             }
         });
         return handler;
-    }
-
-    private List<User>
-    parseNeighbours(final String body) throws IOException {
-        try {
-            //TODO: поправить это
-            //JsonObject jsonArray = GSON.fromJson(body, JsonObject.class);
-            //Type collectionType = new TypeToken<List<User>>(){}.getType();
-            //List<User> users = GSON.fromJson(jsonArray.getAsJsonArray("data"), collectionType);
-            //return users;
-            final List<User> receivedNeighbourList = new ArrayList<>();
-            JSONObject bodyJSON = new JSONObject(body);
-            JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);
-            for (int i = 0; i < array.length(); i++) {
-                receivedNeighbourList.add(new User(array.getJSONObject(i)));
-            }
-            return receivedNeighbourList;
-        } catch (JsonSyntaxException | JSONException e) {
-            throw new IOException(e);
-        }
-    }
-
-    private Position
-    parsePosition(final String body) throws IOException {
-        try {
-            JSONObject bodyJSON = new JSONObject(body);
-            return new Position(bodyJSON.getJSONObject(ServerInfo.NEIGHBOURS_ARRAY_NAME));
-        } catch (JsonSyntaxException | JSONException | ParseException e) {
-            throw new IOException(e);
-        }
-    }
-
-    private List<MeetRequest>
-    parseMeetRequests(final String body) throws IOException {
-        try {
-            final List<MeetRequest> receivedRequestList = new ArrayList<>();
-            JSONObject bodyJSON = new JSONObject(body);
-            JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);
-            for (int i = 0; i < array.length(); i++) {
-                receivedRequestList.add(new MeetRequest(array.getJSONObject(i)));
-            }
-            return receivedRequestList;
-        } catch (JsonSyntaxException | JSONException | ParseException e) {
-            throw new IOException(e);
-        }
-    }
-
-    private ReceivedData
-    parseLoginData(final String body) {
-        return GSON.fromJson(body, ReceivedData.class);
     }
 
     private <T> void

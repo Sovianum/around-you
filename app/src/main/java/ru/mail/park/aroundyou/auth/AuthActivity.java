@@ -15,7 +15,7 @@ import ru.mail.park.aroundyou.Api;
 import ru.mail.park.aroundyou.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.ReceivedData;
+import ru.mail.park.aroundyou.model.ServerResponse;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -23,12 +23,12 @@ public class AuthActivity extends AppCompatActivity {
     private RegistrationFragment registrationFragment;
     private Fragment activeFragment;
 
-    private ListenerHandler<Api.OnSmthGetListener<ReceivedData>> loginHandler;
-    private ListenerHandler<Api.OnSmthGetListener<ReceivedData>> registerHandler;
+    private ListenerHandler<Api.OnSmthGetListener<ServerResponse<String>>> loginHandler;
+    private ListenerHandler<Api.OnSmthGetListener<ServerResponse<String>>> registerHandler;
 
-    private Api.OnSmthGetListener<ReceivedData> loginOnDataGetListener = new Api.OnSmthGetListener<ReceivedData>() {
+    private Api.OnSmthGetListener<ServerResponse<String>> loginOnDataGetListener = new Api.OnSmthGetListener<ServerResponse<String>>() {
         @Override
-        public void onSuccess(ReceivedData response) {
+        public void onSuccess(ServerResponse<String> response) {
             if (response.getData() != null) {
                 onGettingToken(response.getData());
             }
@@ -40,9 +40,9 @@ public class AuthActivity extends AppCompatActivity {
         }
     };
 
-    private Api.OnSmthGetListener<ReceivedData> registerOnDataGetListener = new Api.OnSmthGetListener<ReceivedData>() {
+    private Api.OnSmthGetListener<ServerResponse<String>> registerOnDataGetListener = new Api.OnSmthGetListener<ServerResponse<String>>() {
         @Override
-        public void onSuccess(ReceivedData response) {
+        public void onSuccess(ServerResponse<String> response) {
             if (response.getData() != null) {
                 onGettingToken(response.getData());
             }
