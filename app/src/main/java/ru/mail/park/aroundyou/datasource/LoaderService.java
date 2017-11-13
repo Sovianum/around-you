@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.datasource;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import ru.mail.park.aroundyou.common.ServerInfo;
 import ru.mail.park.aroundyou.model.MeetRequestUpdate;
 import ru.mail.park.aroundyou.model.Position;
 import ru.mail.park.aroundyou.model.MeetRequest;

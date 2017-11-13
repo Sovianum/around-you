@@ -2,8 +2,8 @@ package ru.mail.park.aroundyou.requests.outcome;
 
 import java.util.ArrayList;
 
-import ru.mail.park.aroundyou.Api;
-import ru.mail.park.aroundyou.MemCache;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.datasource.MemCache;
 import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;

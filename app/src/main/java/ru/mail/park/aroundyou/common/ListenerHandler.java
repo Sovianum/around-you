@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.common;
 
 import android.support.annotation.Nullable;
 

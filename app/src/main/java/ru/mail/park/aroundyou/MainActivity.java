@@ -19,6 +19,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
+import ru.mail.park.aroundyou.common.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.datasource.DBApi;
+import ru.mail.park.aroundyou.datasource.MemCache;
 import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
 import ru.mail.park.aroundyou.model.User;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;

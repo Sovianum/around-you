@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.datasource;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.model.User;
 
 public class DBApi {

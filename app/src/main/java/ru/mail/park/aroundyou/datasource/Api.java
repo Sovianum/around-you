@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.datasource;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +20,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ru.mail.park.aroundyou.common.ListenerHandler;
+import ru.mail.park.aroundyou.common.ServerInfo;
 import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.model.MeetRequestUpdate;
 import ru.mail.park.aroundyou.model.Position;

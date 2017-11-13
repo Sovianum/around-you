@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
-import ru.mail.park.aroundyou.Api;
+import ru.mail.park.aroundyou.datasource.Api;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.MeetRequest;
 

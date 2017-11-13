@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.common;
 
 public class ServerInfo {
     public static final String REQUESTS_ARRAY_NAME = "data";

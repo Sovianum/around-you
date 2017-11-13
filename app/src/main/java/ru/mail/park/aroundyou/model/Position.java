@@ -4,10 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import static ru.mail.park.aroundyou.model.Common.DATE_FORMAT;
 
 public class Position {
     private int id;

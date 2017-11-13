@@ -7,8 +7,8 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import ru.mail.park.aroundyou.Api;
-import ru.mail.park.aroundyou.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.model.Position;
 

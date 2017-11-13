@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -30,8 +29,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import ru.mail.park.aroundyou.Api;
-import ru.mail.park.aroundyou.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.Position;
 

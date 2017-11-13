@@ -2,11 +2,7 @@ package ru.mail.park.aroundyou.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.sql.Timestamp;
-import java.text.ParseException;
 
 public class MeetRequest {
     public static final String STATUS_ACCEPTED = "ACCEPTED";
@@ -30,37 +26,10 @@ public class MeetRequest {
     private Timestamp time;
     private String status;
 
-    public MeetRequest(JSONObject jsonObject) throws JSONException, ParseException {
-        try {
-            id = jsonObject.getInt("id");
-        } catch (JSONException ignored) {}
-        requestedId = jsonObject.getInt("requested_id");
-        requesterId = jsonObject.getInt("requester_id");
-
-        try {
-            requestedLogin = jsonObject.getString("requested_login");
-        } catch (JSONException ignored) {}
-
-        try {
-            requesterLogin = jsonObject.getString("requester_login");
-        } catch (JSONException ignored) {}
-
-        try {
-            requesterAbout = jsonObject.getString("requester_about");
-        } catch (JSONException ignored) {}
-
-        try {
-            requestedAbout = jsonObject.getString("requested_about");
-        } catch (JSONException ignored) {}
-
-        status = jsonObject.getString("status");
-        time = Common.extractTimestamp("time", jsonObject);
-    }
-
     public MeetRequest(int id, int requesterId, int requestedId, String requesterLogin,
                        String requestedLogin, String requesterAbout, String requestedAbout, Timestamp time, String status) {
         this.id = id;
-        this.requestedId = requesterId;
+        this.requestedId = requestedId;
         this.requesterId = requesterId;
         this.requesterLogin = requesterLogin;
         this.requestedLogin = requestedLogin;

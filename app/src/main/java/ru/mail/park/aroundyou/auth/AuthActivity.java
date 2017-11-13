@@ -11,8 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import ru.mail.park.aroundyou.Api;
-import ru.mail.park.aroundyou.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.ServerResponse;

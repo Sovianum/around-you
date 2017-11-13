@@ -11,8 +11,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ru.mail.park.aroundyou.Api;
-import ru.mail.park.aroundyou.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.MeetRequestUpdate;
@@ -20,7 +20,6 @@ import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.tracking.Tracker;
 
-import static java.net.HttpURLConnection.HTTP_OK;
 import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_ACCEPTED;
 import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_DECLINED;
 

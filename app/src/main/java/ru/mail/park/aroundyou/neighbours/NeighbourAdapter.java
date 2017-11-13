@@ -12,8 +12,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ru.mail.park.aroundyou.Api;
-import ru.mail.park.aroundyou.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.User;

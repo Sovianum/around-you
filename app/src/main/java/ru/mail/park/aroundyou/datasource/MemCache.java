@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou;
+package ru.mail.park.aroundyou.datasource;
 
 import java.util.ArrayList;
 import java.util.List;
