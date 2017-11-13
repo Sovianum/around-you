@@ -25,6 +25,9 @@ public interface LoaderService {
     @POST("api/v1/auth/login")
     Call<ServerResponse<String>> loginUser(@Body RequestBody user);
 
+    @GET("api/user/self")
+    Call<ServerResponse<User>> getSelfInfo(@Header(ServerInfo.AUTH_HEADER) String token);
+
     @POST("api/v1/user/position/save")
     Call<ResponseBody> savePosition(@Header(ServerInfo.AUTH_HEADER) String token, @Body Position position);
 

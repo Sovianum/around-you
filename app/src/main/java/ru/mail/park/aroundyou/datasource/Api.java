@@ -61,6 +61,30 @@ public class Api {
         return INSTANCE;
     }
 
+    public ListenerHandler<OnSmthGetListener<User>>
+    getSelfInfo(final OnSmthGetListener<User> listener) {
+        final ListenerHandler<OnSmthGetListener<User>> handler = new ListenerHandler<>(listener);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Response<ServerResponse<User>> response = service.getSelfInfo(token).execute();
+                    final ServerResponse<User> responseBody = response.body();
+                    if (responseBody == null) {
+                        throw new IOException("Cannot get body");
+                    }
+
+                    if (responseBody.getData() == null) {
+                        throw new IOException(responseBody.getErrMsg());
+                    }
+                } catch (IOException e) {
+                    invokeError(handler, e);
+                }
+            }
+        });
+        return handler;
+    }
+
     public ListenerHandler<OnSmthGetListener<Integer>>
     savePosition(final Position position, final OnSmthGetListener<Integer> listener) {
         final ListenerHandler<OnSmthGetListener<Integer>> handler = new ListenerHandler<>(listener);
