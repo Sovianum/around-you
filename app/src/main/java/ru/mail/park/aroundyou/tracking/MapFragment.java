@@ -11,6 +11,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -77,6 +83,15 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         }
     };
 
+    private Button stopTrackingBtn;
+
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
+        FrameLayout mapView = (FrameLayout) super.onCreateView(layoutInflater, viewGroup, bundle);
+        prepareButtonLayout(layoutInflater, mapView);
+        return mapView;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -129,6 +144,14 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         }
     }
 
+    private void removeDestMarker() {
+        if (destMarker == null) {
+            return;
+        }
+        destMarker.remove();
+        destMarker = null;
+    }
+
     private void setDestMarker(LatLng pos) {
         if (getActivity() == null) {
             return;
@@ -161,6 +184,46 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                     );
         }
         return null;
+    }
+
+    @NonNull
+    private void prepareButtonLayout(LayoutInflater layoutInflater, ViewGroup viewGroup) {
+        View relativeLayout1 = layoutInflater.inflate(
+                R.layout.map_button_layout,
+                viewGroup
+        );
+        stopTrackingBtn = relativeLayout1.findViewById(R.id.stop_tracking_btn);
+        if (!Tracker.getInstance(getContext()).isTracking()) {
+            setUntracking();
+            return;
+        }
+
+        setTracking();
+        stopTrackingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Tracker.getInstance(MapFragment.this.getContext()).stopTracking();
+                Toast.makeText(
+                        MapFragment.this.getContext(),
+                        getString(R.string.tracking_stopped_str),
+                        Toast.LENGTH_SHORT
+                ).show();
+                setUntracking();
+                removeDestMarker();
+            }
+        });
+    }
+
+    private void setTracking() {
+        stopTrackingBtn.setAlpha(1f);
+        stopTrackingBtn.setText(R.string.stop_tracking_command);
+        stopTrackingBtn.setClickable(true);
+    }
+
+    private void setUntracking() {
+        stopTrackingBtn.setAlpha(0.25f);
+        stopTrackingBtn.setText(R.string.not_tracking_str);
+        stopTrackingBtn.setClickable(false);
     }
 
     private void fitCamera() {

@@ -43,4 +43,7 @@
     <string name="stop_tracking_str">Прекратите отслеживание текущего пользователя</string>
     <string name="you_got_requests_template">Вы получили %d новых запросов \n</string>
     <string name="request_accepted_template">%s принял ваш запрос. Началось отслеживание</string>
+    <string name="stop_tracking_command">Прекратить отслеживание</string>
+    <string name="not_tracking_str">Некого отслеживать</string>
+    <string name="tracking_stopped_str">Отслеживание остановлено</string>
 </resources>
