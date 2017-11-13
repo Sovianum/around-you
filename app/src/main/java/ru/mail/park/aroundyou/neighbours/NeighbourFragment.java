@@ -80,6 +80,7 @@ public class NeighbourFragment extends Fragment {
     }
 
     private void refreshItems() {
+        DBApi.getInstance(getActivity().getApplicationContext()).getNeighbours(onNeighboursGetListenerDB);
         neighboursHandler = Api.getInstance().getNeighbours(onNeighboursGetListener);
     }
 

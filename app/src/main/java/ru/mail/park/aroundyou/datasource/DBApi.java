@@ -134,7 +134,7 @@ public class DBApi {
     private void insertNeighbourOrUserDB(User user, String neighbourOrUser) {
         checkInitialized();
         try {
-            database.execSQL("INSERT INTO " + TABLE_NAME_NEIGHBOURS
+            database.execSQL("INSERT INTO " + neighbourOrUser
                             + " (" + COLUMN_USER_ID + ", " + COLUMN_LOGIN + ", " + COLUMN_ABOUT + ", "
                             + COLUMN_SEX + ", " + COLUMN_AGE +  ") VALUES (?, ?, ?, ?, ?)",
                     new Object[]{user.getId(), user.getLogin(),
@@ -152,7 +152,7 @@ public class DBApi {
             public void run() {
                 checkInitialized();
 
-                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_USERS, null);
+                Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_NEIGHBOURS + ";", null);
                 if (cursor == null) {
                     listener.onError(new IOException("DB exception"));
                 } else {

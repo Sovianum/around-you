@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
-        getApplicationContext().deleteDatabase("AroundYouDB.db");
+        //getApplicationContext().deleteDatabase("AroundYouDB.db");
 
         neighbourFragment = getPreparedNeighbourFragment();
         if (neighboursHandler != null) {
@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         if (neighboursHandlerDB != null) {
             neighboursHandlerDB.unregister();
         }
+
         neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
 
         Pusher.getInstance().subscribe(pushListener);
@@ -202,7 +203,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        nav.setSelectedItemId(R.id.action_income_requests);
+        nav.setSelectedItemId(R.id.action_neighbours);
+        //nav.setSelectedItemId(R.id.action_income_requests);
     }
 
     @Override
