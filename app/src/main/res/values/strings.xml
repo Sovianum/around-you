@@ -46,4 +46,5 @@
     <string name="stop_tracking_command">Прекратить отслеживание</string>
     <string name="not_tracking_str">Некого отслеживать</string>
     <string name="tracking_stopped_str">Отслеживание остановлено</string>
+    <string name="interrupted_str">Ваш собеседник прервал отслеживание</string>
 </resources>

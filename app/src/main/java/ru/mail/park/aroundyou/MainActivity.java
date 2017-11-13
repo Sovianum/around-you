@@ -29,8 +29,9 @@ import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestFragment;
 import ru.mail.park.aroundyou.tracking.MapFragment;
 import ru.mail.park.aroundyou.tracking.Tracker;
 
-import static ru.mail.park.aroundyou.requests.income.IncomeMeetRequestAdapter.STATUS_ACCEPTED;
-import static ru.mail.park.aroundyou.requests.income.IncomeMeetRequestAdapter.STATUS_PENDING;
+import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_ACCEPTED;
+import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_INTERRUPTED;
+import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_PENDING;
 
 public class MainActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
@@ -116,23 +117,37 @@ public class MainActivity extends AppCompatActivity {
         public void onPush(List<MeetRequest> newRequests) {
             int incomeCnt = 0;
             MeetRequest acceptedRequest = null;
+            MeetRequest interruptedRequest = null;
 
             for (int i = 0; i != newRequests.size(); i++) {
                 MeetRequest request = newRequests.get(i);
-                if (request.getStatus().equals(STATUS_PENDING)) {
-                    incomeCnt++;
-                }
-                if (request.getStatus().equals(STATUS_ACCEPTED)) {
-                    acceptedRequest = request;
-                    Tracker.getInstance(MainActivity.this).startTracking(acceptedRequest.getRequestedId());
+                switch (request.getStatus()) {
+                    case STATUS_PENDING: {
+                        incomeCnt++;
+                        break;
+                    }
+                    case STATUS_ACCEPTED: {
+                        acceptedRequest = request;
+                        break;
+                    }
+                    case STATUS_INTERRUPTED: {
+                        interruptedRequest = request;
+                        break;
+                    }
                 }
             }
 
+            // the order of handling interrupted and accepted requests matters
             String msg = "";
             if (incomeCnt > 0) {
                 msg += String.format(getString(R.string.you_got_requests_template), incomeCnt);
             }
+            if (interruptedRequest != null) {
+                Tracker.getInstance(MainActivity.this).stopTracking();
+                msg += getString(R.string.interrupted_str);
+            }
             if (acceptedRequest != null) {
+                Tracker.getInstance(MainActivity.this).startTracking(acceptedRequest.getRequestedId());
                 msg += String.format(getString(R.string.request_accepted_template), acceptedRequest.getRequestedLogin());
             }
             if (msg.length() > 0) {

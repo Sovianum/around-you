@@ -1,7 +1,6 @@
 package ru.mail.park.aroundyou.requests.income;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,12 +21,11 @@ import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.tracking.Tracker;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_ACCEPTED;
+import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_DECLINED;
 
 public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
     public static final int HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
-    public static final String STATUS_ACCEPTED = "ACCEPTED";
-    public static final String STATUS_DECLINED = "DECLINED";
-    public static final String STATUS_PENDING = "PENDING";
 
     public static final int CARD_ID = R.layout.item_income_request_card;
     private List<MeetRequest> items;

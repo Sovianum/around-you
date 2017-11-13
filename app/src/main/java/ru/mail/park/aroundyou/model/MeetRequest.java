@@ -9,6 +9,11 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 
 public class MeetRequest {
+    public static final String STATUS_ACCEPTED = "ACCEPTED";
+    public static final String STATUS_DECLINED = "DECLINED";
+    public static final String STATUS_PENDING = "PENDING";
+    public static final String STATUS_INTERRUPTED = "INTERRUPTED";
+
     private int id;
     @SerializedName("requester_id")
     private int requesterId;
