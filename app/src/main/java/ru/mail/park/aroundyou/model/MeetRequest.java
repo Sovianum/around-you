@@ -25,6 +25,8 @@ public class MeetRequest {
     private String requestedLogin;
     @SerializedName("requester_about")
     private String requesterAbout;
+    @SerializedName("requested_about")
+    private String requestedAbout;
     private Timestamp time;
     private String status;
 
@@ -47,18 +49,23 @@ public class MeetRequest {
             requesterAbout = jsonObject.getString("requester_about");
         } catch (JSONException ignored) {}
 
+        try {
+            requestedAbout = jsonObject.getString("requested_about");
+        } catch (JSONException ignored) {}
+
         status = jsonObject.getString("status");
         time = Common.extractTimestamp("time", jsonObject);
     }
 
     public MeetRequest(int id, int requesterId, int requestedId, String requesterLogin,
-                       String requestedLogin, String requesterAbout, Timestamp time, String status) {
+                       String requestedLogin, String requesterAbout, String requestedAbout, Timestamp time, String status) {
         this.id = id;
         this.requestedId = requesterId;
         this.requesterId = requesterId;
         this.requesterLogin = requesterLogin;
         this.requestedLogin = requestedLogin;
         this.requesterAbout = requesterAbout;
+        this.requestedAbout = requestedAbout;
         this.time = time;
         this.status = status;
 
@@ -78,6 +85,10 @@ public class MeetRequest {
 
     public String getRequesterAbout() {
         return requesterAbout;
+    }
+
+    public String getRequestedAbout() {
+        return requestedAbout;
     }
 
     public int getId() {

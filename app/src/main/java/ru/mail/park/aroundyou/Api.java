@@ -303,7 +303,6 @@ public class Api {
                             throw new IOException("Cannot get body");
                         }
                         final String body = responseBody.string();
-                        //invokeSuccess(handler, parseNeighbours(body));
                         invokeSuccess(handler, parseLoginData(body));
                     }
                 } catch (IOException e) {
@@ -317,11 +316,6 @@ public class Api {
     private List<User>
     parseNeighbours(final String body) throws IOException {
         try {
-            //TODO: поправить это
-            //JsonObject jsonArray = GSON.fromJson(body, JsonObject.class);
-            //Type collectionType = new TypeToken<List<User>>(){}.getType();
-            //List<User> users = GSON.fromJson(jsonArray.getAsJsonArray("data"), collectionType);
-            //return users;
             final List<User> receivedNeighbourList = new ArrayList<>();
             JSONObject bodyJSON = new JSONObject(body);
             JSONArray array = bodyJSON.getJSONArray(ServerInfo.NEIGHBOURS_ARRAY_NAME);

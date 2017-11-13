@@ -35,7 +35,7 @@ public class OutcomeMeetRequestAdapter extends MeetRequestAdapter {
 
         OutcomeMeetRequestAdapter.CardViewHolder cardHolder = (OutcomeMeetRequestAdapter.CardViewHolder) holder;
         cardHolder.requestedLoginView.setText(item.getRequestedLogin());
-        cardHolder.requestedAboutView.setText("Выгрузить информацию о пользователе из кеша");
+        cardHolder.requestedAboutView.setText(item.getRequestedAbout());
     }
 
     @Override
