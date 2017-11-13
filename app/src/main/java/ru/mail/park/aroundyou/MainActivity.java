@@ -160,17 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private DBApi.OnDBDataGetListener<User> userListenerDB = new DBApi.OnDBDataGetListener<User>() {
-        @Override
-        public void onSuccess(User user) {
-        }
-
-        @Override
-        public void onError(Exception error) {
-            //если нет в базе, тогда будем запрашивать из сети
-        }
-    };
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -190,9 +179,6 @@ public class MainActivity extends AppCompatActivity {
         neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
 
         Pusher.getInstance().subscribe(pushListener);
-
-
-        userHandler = DBApi.getInstance(this).getUser(userListenerDB, 3);
 
         mapFragment = getPreparedMapFragment();
         outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
@@ -285,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
         NeighbourFragment fragment = new NeighbourFragment();
         fragment.setListener(neighboursListener);
         fragment.setListenerDB(neighboursListenerDB);
+        fragment.setHandler(neighboursHandler);
         return fragment;
     }
 
