@@ -1,4 +1,4 @@
-package ru.mail.park.aroundyou.datasource;
+package ru.mail.park.aroundyou.datasource.network;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -69,14 +69,7 @@ public class Api {
             public void run() {
                 try {
                     final Response<ServerResponse<User>> response = service.getSelfInfo(token).execute();
-                    final ServerResponse<User> responseBody = response.body();
-                    if (responseBody == null) {
-                        throw new IOException("Cannot get body");
-                    }
-
-                    if (responseBody.getData() == null) {
-                        throw new IOException(responseBody.getErrMsg());
-                    }
+                    handleDefaultSuccess(response, handler, HTTP_OK);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -112,17 +105,7 @@ public class Api {
             public void run() {
             try {
                 final Response<ServerResponse<List<User>>> response = service.getNeighbours(token).execute();
-                if (response.code() != HTTP_OK) {
-                    throw new IOException("HTTP code " + response.code());
-                }
-                ServerResponse<List<User>> responseBody = response.body();
-                if (responseBody == null) {
-                    throw new IOException("Cannot get body");
-                }
-                if (responseBody.getData() == null) {
-                    throw new IOException(responseBody.getErrMsg());
-                }
-                invokeSuccess(handler, responseBody.getData());
+                handleDefaultSuccess(response, handler, HTTP_OK);
             } catch (IOException e) {
                 invokeError(handler, e);
             }
@@ -139,14 +122,7 @@ public class Api {
             public void run() {
             try {
                 final Response<ServerResponse<Position>> response = service.getNeighbourPosition(neighbourId, token).execute();
-                final ServerResponse<Position> responseBody = response.body();
-                if (responseBody == null) {
-                    throw new IOException("Cannot get body");
-                }
-
-                if (responseBody.getData() == null) {
-                    throw new IOException(responseBody.getErrMsg());
-                }
+                handleDefaultSuccess(response, handler, HTTP_OK);
             } catch (IOException e) {
                 invokeError(handler, e);
             }
@@ -184,14 +160,7 @@ public class Api {
                     final Response<ServerResponse<MeetRequest>> response = service
                             .updateRequest(update, token)
                             .execute();
-                    final ServerResponse<MeetRequest> responseBody = response.body();
-                    if (responseBody == null) {
-                        throw new IOException("Cannot get body");
-                    }
-                    if (responseBody.getData() == null) {
-                        throw new IOException(responseBody.getErrMsg());
-                    }
-                    invokeSuccess(handler, responseBody.getData());
+                    handleDefaultSuccess(response, handler, HTTP_OK);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -209,17 +178,7 @@ public class Api {
                 try {
                     final Response<ServerResponse<List<MeetRequest>>>
                             response = service.getOutcomePendingRequests(token).execute();
-
-                    final ServerResponse<List<MeetRequest>> body = response.body();
-                    if (body == null) {
-                        throw new IOException("Cannot get body");
-                    }
-
-                    if (body.getData() == null) {
-                        throw new IOException(body.getErrMsg());
-                    }
-
-                    invokeSuccess(handler, body.getData());
+                    handleDefaultSuccess(response, handler, HTTP_OK);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -237,17 +196,7 @@ public class Api {
                 try {
                     final Response<ServerResponse<List<MeetRequest>>>
                             response = service.getIncomePendingRequests(token).execute();
-
-                    final ServerResponse<List<MeetRequest>> body = response.body();
-                    if (body == null) {
-                        throw new IOException("Cannot get body");
-                    }
-
-                    if (body.getData() == null) {
-                        throw new IOException(body.getErrMsg());
-                    }
-
-                    invokeSuccess(handler, body.getData());
+                    handleDefaultSuccess(response, handler, HTTP_OK);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -265,17 +214,7 @@ public class Api {
                 try {
                     final Response<ServerResponse<List<MeetRequest>>>
                             response = service.getNewRequests(token).execute();
-
-                    final ServerResponse<List<MeetRequest>> body = response.body();
-                    if (body == null) {
-                        throw new IOException("Cannot get body");
-                    }
-
-                    if (body.getData() == null) {
-                        throw new IOException(body.getErrMsg());
-                    }
-
-                    invokeSuccess(handler, body.getData());
+                    handleDefaultSuccess(response, handler, HTTP_OK);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -342,6 +281,21 @@ public class Api {
         return handler;
     }
 
+    private <T> void handleDefaultSuccess(
+            Response<ServerResponse<T>> response,
+            ListenerHandler<OnSmthGetListener<T>> handler,
+            int expectedCode
+    ) throws NetworkError {
+        final ServerResponse<T> body = response.body();
+        if (body == null) {
+            throw new NetworkError(response.code());
+        }
+        if (body.getData() == null || response.code() != expectedCode) {
+            throw new NetworkError(body.getErrMsg(), response.code());
+        }
+        invokeSuccess(handler, body.getData());
+    }
+
     private <T> void
     invokeSuccess(final ListenerHandler<OnSmthGetListener<T>> handler, final T payload) {
         mainHandler.post(new Runnable() {
@@ -349,7 +303,7 @@ public class Api {
             public void run() {
                 OnSmthGetListener<T> listener = handler.getListener();
                 if (listener != null) {
-                    Log.d("API", "listener NOT null in invokeSucces");
+                    Log.d("API", "listener NOT null in invokeSuccess");
                     listener.onSuccess(payload);
                 } else {
                     Log.d("API", "listener is null");

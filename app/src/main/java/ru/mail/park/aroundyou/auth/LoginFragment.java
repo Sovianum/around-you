@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.ServerResponse;

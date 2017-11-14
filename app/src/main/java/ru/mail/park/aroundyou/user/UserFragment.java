@@ -10,11 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.auth.AuthActivity;
-import ru.mail.park.aroundyou.datasource.Api;
 
 public class UserFragment extends Fragment {
     private Button logoutButton;

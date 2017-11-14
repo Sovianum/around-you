@@ -20,7 +20,7 @@ import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
 import ru.mail.park.aroundyou.common.ListenerHandler;
-import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.datasource.DBApi;
 import ru.mail.park.aroundyou.datasource.MemCache;
 import ru.mail.park.aroundyou.neighbours.NeighbourFragment;

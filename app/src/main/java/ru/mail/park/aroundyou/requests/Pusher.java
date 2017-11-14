@@ -6,7 +6,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.mail.park.aroundyou.datasource.Api;
+import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.model.MeetRequest;
 
