@@ -15,8 +15,8 @@
     <string name="text_login_from_register">Нет аккаунта? Зарегистрироваться.</string>
     <string name="text_register_from_login">Уже зарегистрированы? Авторизоваться.</string>
     <string-array name="sex">
-        <item>М</item>
-        <item>Ж</item>
+        <item>M</item>
+        <item>F</item>
     </string-array>
     <string name="about_hint">О себе</string>
     <string name="age_hint">Ваш возраст</string>
