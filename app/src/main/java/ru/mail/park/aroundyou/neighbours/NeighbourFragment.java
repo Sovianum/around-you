@@ -6,19 +6,26 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.datasource.DBApi;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.User;
+
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;
@@ -27,6 +34,34 @@ public class NeighbourFragment extends Fragment {
     private Api.OnSmthGetListener<List<User>> onNeighboursGetListener;
     private DBApi.OnDBDataGetListener<List<User>> onNeighboursGetListenerDB;
     private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
+    private ListenerHandler<Api.OnSmthGetListener<Integer>> requestCreationHandler;
+
+    private Api.OnSmthGetListener<Integer> requestCreationListener = new Api.OnSmthGetListener<Integer>() {
+        @Override
+        public void onSuccess(Integer code) {
+            String message;
+            switch (code) {
+                case HTTP_OK:
+                    message = getString(R.string.request_created_str);
+                    break;
+                case HTTP_FORBIDDEN:
+                    message = getString(R.string.request_exists_str);
+                    break;
+                default:
+                    message = String.format(Locale.ENGLISH, "Response code is %d", code);
+                    break;
+            }
+            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+            setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+            setRefreshing(false);
+        }
+    };
 
     @Nullable
     @Override
@@ -54,6 +89,17 @@ public class NeighbourFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        if (neighboursHandler != null) {
+            neighboursHandler.unregister();
+        }
+        if (requestCreationHandler != null) {
+            requestCreationHandler.unregister();
+        }
+        super.onStop();
+    }
+
     public void setRefreshing(boolean refreshing) {
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(refreshing);
@@ -77,6 +123,11 @@ public class NeighbourFragment extends Fragment {
     public void setHandler(ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler) {
         this.neighboursHandler = neighboursHandler;
 
+    }
+
+    public void createRequest(int userId) {
+        setRefreshing(true);
+        requestCreationHandler = Api.getInstance().createMeetRequest(userId, requestCreationListener);
     }
 
     private void refreshItems() {

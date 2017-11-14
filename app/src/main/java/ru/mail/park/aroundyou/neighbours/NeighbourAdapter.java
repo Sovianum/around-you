@@ -25,34 +25,6 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static int CARD_ID = R.layout.item_neighbour_card;
     private List<User> items;
     private NeighbourFragment fragment;
-    private ListenerHandler<Api.OnSmthGetListener<Integer>> requestHandler;
-
-    private Api.OnSmthGetListener<Integer> requestListener = new Api.OnSmthGetListener<Integer>() {
-        @Override
-        public void onSuccess(Integer code) {
-            String message;
-            switch (code) {
-                case HTTP_OK:
-                    message = fragment.getString(R.string.request_created_str);
-                    break;
-                case HTTP_FORBIDDEN:
-                    message = fragment.getString(R.string.request_exists_str);
-                    break;
-                default:
-                    message = String.format("Response code is %d", code);
-                    break;
-            }
-            Toast.makeText(NeighbourAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
-            fragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(NeighbourAdapter.this.fragment.getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-            fragment.setRefreshing(false);
-        }
-    };
 
     public class CardViewHolder extends RecyclerView.ViewHolder {
         TextView loginView;
@@ -95,16 +67,15 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final User item = items.get(position);
+        final User user = items.get(position);
 
         final CardViewHolder cardHolder = (CardViewHolder) holder;
-        cardHolder.loginView.setText(item.getLogin());
-        cardHolder.aboutView.setText(item.getAbout());
+        cardHolder.loginView.setText(user.getLogin());
+        cardHolder.aboutView.setText(user.getAbout());
         cardHolder.requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragment.setRefreshing(true);
-                requestHandler = Api.getInstance().createMeetRequest(item.getId(), requestListener);
+                fragment.createRequest(user.getId());
             }
         });
 

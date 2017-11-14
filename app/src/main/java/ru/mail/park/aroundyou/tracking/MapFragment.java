@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,14 +39,13 @@ import static ru.mail.park.aroundyou.MainActivity.MY_PERMISSIONS_REQUEST_LOCATIO
 
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback {
     private LocationManager locationManager;
-    private Api.OnSmthGetListener<Position> onDestPositionChangeListener;
 
     private LocationListener onSelfLocationChangeListener = new LocationListener() {
         ListenerHandler<Api.OnSmthGetListener<Integer>> positionHandler;
-        Api.OnSmthGetListener<Integer> listener = new Api.OnSmthGetListener<Integer>() {
+        Api.OnSmthGetListener<Integer> savePositionListener = new Api.OnSmthGetListener<Integer>() {
             @Override
             public void onSuccess(Integer payload) {
-//                Toast.makeText(getContext(), String.format("Response code is %d", payload), Toast.LENGTH_LONG).show();
+                Log.d(MapFragment.class.getName(), "position successfully saved");
             }
 
             @Override
@@ -57,7 +57,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         @Override
         public void onLocationChanged(final Location location) {
             Position position = new Position(location.getLatitude(), location.getLongitude());
-            positionHandler = Api.getInstance().savePosition(position, listener);
+            positionHandler = Api.getInstance().savePosition(position, savePositionListener);
             setMyMarker(new LatLng(location.getLatitude(), location.getLongitude()));
         }
 
@@ -122,7 +122,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public void onStop() {
         super.onStop();
         locationManager.removeUpdates(onSelfLocationChangeListener);
-        onDestPositionChangeListener = null;
         Tracker.getInstance(this.getContext()).unSubscribe();
     }
 
