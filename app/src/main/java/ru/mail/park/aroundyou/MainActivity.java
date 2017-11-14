@@ -102,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
-        //getApplicationContext().deleteDatabase("AroundYouDB.db");
-        //SharedPreferences.Editor editor = PreferenceManager
-        //        .getDefaultSharedPreferences(this).edit();
-
-        //editor.putInt(PreferencesInfo.USER_SELF_ID, 0);
-        //editor.apply();
 
         neighbourFragment = new NeighbourFragment();
 

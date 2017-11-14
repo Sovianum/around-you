@@ -275,15 +275,6 @@ public class DBApi {
         database.execSQL("DELETE FROM " + tableName);
     }
 
-    public void dropTableNeighbours() {
-        dropTable(TABLE_NAME_NEIGHBOURS);
-    }
-
-    public void dropAllTable() {
-        dropTable(TABLE_NAME_NEIGHBOURS);
-        dropTable(TABLE_NAME_USERS);
-    }
-
     private void dropTable(final String tableName) {
         checkInitialized();
         executor.execute(new Runnable() {
@@ -330,13 +321,5 @@ public class DBApi {
         void onSuccess(final T items);
 
         void onError(final Exception error);
-    }
-
-    public void deleteDB() {
-        if (database == null || context == null) {
-            return;
-        }
-        context.deleteDatabase(DB_NAME);
-        database = null;
     }
 }
