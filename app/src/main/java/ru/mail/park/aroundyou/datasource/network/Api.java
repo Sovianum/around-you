@@ -234,14 +234,15 @@ public class Api {
                     RequestBody requestBody =
                             RequestBody.create(MediaType.parse("text/plain"), strRequestBody);
                     final Response<ServerResponse<String>> response = service.loginUser(requestBody).execute();
-                    if (response.code() != HTTP_OK) {
-                        throw new IOException("HTTP code " + response.code());
+
+                    final ServerResponse<String> body = response.body();
+                    if (body == null) {
+                        throw new NetworkError(response.code());
                     }
-                    ServerResponse<String> responseBody = response.body();
-                    if (responseBody == null) {
-                        throw new IOException("Cannot get body");
+                    if (body.getData() == null || response.code() != HTTP_OK) {
+                        throw new NetworkError(body.getErrMsg(), response.code());
                     }
-                    invokeSuccess(handler, responseBody);
+                    invokeSuccess(handler, body);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
@@ -261,18 +262,15 @@ public class Api {
                     RequestBody requestBody =
                             RequestBody.create(MediaType.parse("text/plain"), strRequestBody);
                     final Response<ServerResponse<String>> response = service.registerUser(requestBody).execute();
-                    if (response.code() != HTTP_OK) {
-                        throw new IOException("HTTP code " + response.code());
-                    }
 
-                    final ServerResponse<String> responseBody = response.body();
-                    if (responseBody == null) {
-                        throw new IOException("Cannot get body");
+                    final ServerResponse<String> body = response.body();
+                    if (body == null) {
+                        throw new NetworkError(response.code());
                     }
-                    if (responseBody.getData() == null) {
-                        throw new IOException(responseBody.getErrMsg());
+                    if (body.getData() == null || response.code() != HTTP_OK) {
+                        throw new NetworkError(body.getErrMsg(), response.code());
                     }
-                    invokeSuccess(handler, responseBody);
+                    invokeSuccess(handler, body);
                 } catch (IOException e) {
                     invokeError(handler, e);
                 }
