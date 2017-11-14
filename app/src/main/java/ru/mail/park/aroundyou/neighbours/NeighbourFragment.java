@@ -36,10 +36,41 @@ public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Api.OnSmthGetListener<List<User>> onNeighboursGetListener;
-    private DBApi.OnDBDataGetListener<List<User>> onNeighboursGetListenerDB;
     private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
     private ListenerHandler<Api.OnSmthGetListener<Integer>> requestCreationHandler;
+    private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
+
+    private DBApi.OnDBDataGetListener<List<User>> onNeighboursGetListenerDB = new DBApi.OnDBDataGetListener<List<User>>() {
+        @Override
+        public void onSuccess(List<User> items) {
+            loadItems(items);
+            setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(NeighbourFragment.this.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            setRefreshing(false);
+        }
+    };
+
+    private Api.OnSmthGetListener<List<User>> onNeighboursGetListener = new Api.OnSmthGetListener<List<User>>() {
+        @Override
+        public void onSuccess(List<User> neighbourItems) {
+            loadItems(neighbourItems);
+            cacheNeighbours(neighbourItems);
+            cacheUsers(neighbourItems);
+            setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(NeighbourFragment.this.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            setRefreshing(false);
+        }
+    };
 
     private Api.OnSmthGetListener<Integer> requestCreationListener = new Api.OnSmthGetListener<Integer>() {
         @Override
@@ -99,10 +130,15 @@ public class NeighbourFragment extends Fragment {
             }
         });
 
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        neighboursHandlerDB = DBApi.getInstance(getContext()).getNeighbours(onNeighboursGetListenerDB);
         setRefreshing(true);
         refreshItems();
-
-        return view;
     }
 
     @Override
@@ -112,6 +148,9 @@ public class NeighbourFragment extends Fragment {
         }
         if (requestCreationHandler != null) {
             requestCreationHandler.unregister();
+        }
+        if (neighboursHandlerDB != null) {
+            neighboursHandlerDB.unregister();
         }
         super.onStop();
     }
@@ -126,19 +165,6 @@ public class NeighbourFragment extends Fragment {
         if (adapter != null) {
             adapter.setItems(items);
         }
-    }
-
-    public void setListener(Api.OnSmthGetListener<List<User>> onNeighboursGetListener) {
-        this.onNeighboursGetListener = onNeighboursGetListener;
-    }
-
-    public void setListenerDB(DBApi.OnDBDataGetListener<List<User>> onNeighboursGetListenerDB) {
-        this.onNeighboursGetListenerDB = onNeighboursGetListenerDB;
-    }
-
-    public void setHandler(ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler) {
-        this.neighboursHandler = neighboursHandler;
-
     }
 
     public void createRequest(int userId) {
@@ -162,5 +188,13 @@ public class NeighbourFragment extends Fragment {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void cacheNeighbours(List<User> neighbourItems) {
+        DBApi.getInstance(getContext()).insertNeighbours(neighbourItems);
+    }
+
+    private void cacheUsers(List<User> users) {
+        DBApi.getInstance(getContext()).insertUsers(users);
     }
 }

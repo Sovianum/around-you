@@ -54,23 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
     private ListenerHandler<DBApi.OnDBDataGetListener<User>> userHandler;
 
-    private Api.OnSmthGetListener<List<User>> neighboursListener = new Api.OnSmthGetListener<List<User>>() {
-        @Override
-        public void onSuccess(List<User> neighbourItems) {
-            neighbourFragment.loadItems(neighbourItems);
-            cacheNeighbours(neighbourItems);
-            cacheUsers(neighbourItems);
-            neighbourFragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-            neighbourFragment.setRefreshing(false);
-        }
-    };
-
     private Api.OnSmthGetListener<List<MeetRequest>> onGetOutcomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequest>>() {
 
         @Override
@@ -102,21 +85,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e(MainActivity.class.getName(), error.toString());
             Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
             incomeRequestsFragment.setRefreshing(false);
-        }
-    };
-
-    private DBApi.OnDBDataGetListener<List<User>> neighboursListenerDB = new DBApi.OnDBDataGetListener<List<User>>() {
-        @Override
-        public void onSuccess(List<User> items) {
-            neighbourFragment.loadItems(items);
-            neighbourFragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-            neighbourFragment.setRefreshing(false);
         }
     };
 
@@ -184,8 +152,6 @@ public class MainActivity extends AppCompatActivity {
         if (neighboursHandlerDB != null) {
             neighboursHandlerDB.unregister();
         }
-
-        neighboursHandlerDB = DBApi.getInstance(this).getNeighbours(neighboursListenerDB);
 
         Pusher.getInstance().subscribe(pushListener);
 
@@ -280,11 +246,7 @@ public class MainActivity extends AppCompatActivity {
         if (neighbourFragment != null) {
             return neighbourFragment;
         }
-        NeighbourFragment fragment = new NeighbourFragment();
-        fragment.setListener(neighboursListener);
-        fragment.setListenerDB(neighboursListenerDB);
-        fragment.setHandler(neighboursHandler);
-        return fragment;
+        return new NeighbourFragment();
     }
 
     private MapFragment getPreparedMapFragment() {
@@ -313,13 +275,5 @@ public class MainActivity extends AppCompatActivity {
         activeFragment = fragment;
         fragmentTransaction.add(R.id.fragment_container, activeFragment);
         fragmentTransaction.commit();
-    }
-
-    public void cacheNeighbours(List<User> neighbourItems) {
-        DBApi.getInstance(this).insertNeighbours(neighbourItems);
-    }
-
-    public void cacheUsers(List<User> users) {
-        DBApi.getInstance(this).insertUsers(users);
     }
 }
