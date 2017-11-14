@@ -25,6 +25,23 @@ public class IncomeMeetRequestFragment extends MeetRequestFragment {
     private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> acceptHandler;
     private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> declineHandler;
 
+    private Api.OnSmthGetListener<List<MeetRequest>> onRequestsGetListener = new Api.OnSmthGetListener<List<MeetRequest>>() {
+
+        @Override
+        public void onSuccess(List<MeetRequest> items) {
+            MemCache.clearAndAddIncomeRequests(items);
+            loadItems(items);
+            setRefreshing(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(MainActivity.class.getName(), error.toString());
+            Toast.makeText(IncomeMeetRequestFragment.this.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            setRefreshing(false);
+        }
+    };
+
     private Api.OnSmthGetListener<MeetRequest> acceptListener = new Api.OnSmthGetListener<MeetRequest>() {
         @Override
         public void onSuccess(MeetRequest payload) {

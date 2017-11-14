@@ -22,7 +22,6 @@ abstract public class MeetRequestFragment extends Fragment {
     protected MeetRequestAdapter adapter;
     protected RecyclerView recyclerView;
     protected SwipeRefreshLayout swipeRefreshLayout;
-    protected Api.OnSmthGetListener<List<MeetRequest>> onRequestsGetListener;
 
     @Nullable
     @Override
@@ -50,10 +49,6 @@ abstract public class MeetRequestFragment extends Fragment {
         return view;
     }
 
-    abstract protected MeetRequestAdapter getAdapter();
-
-    abstract protected void refreshItems();
-
     public void setRefreshing(boolean refreshing) {
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(refreshing);
@@ -66,9 +61,9 @@ abstract public class MeetRequestFragment extends Fragment {
         }
     }
 
-    public void setListener(Api.OnSmthGetListener<List<MeetRequest>> onRequestsGetListener) {
-        this.onRequestsGetListener = onRequestsGetListener;
-    }
+    abstract protected MeetRequestAdapter getAdapter();
+
+    abstract protected void refreshItems();
 
     private void onItemsLoadComplete() {
         if (swipeRefreshLayout != null) {

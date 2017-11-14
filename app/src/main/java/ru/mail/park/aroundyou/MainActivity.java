@@ -50,43 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private UserFragment userFragment;
 
     private Fragment activeFragment;
-    private ListenerHandler<Api.OnSmthGetListener<List<User>>> neighboursHandler;
-    private ListenerHandler<DBApi.OnDBDataGetListener<List<User>>> neighboursHandlerDB;
-    private ListenerHandler<DBApi.OnDBDataGetListener<User>> userHandler;
-
-    private Api.OnSmthGetListener<List<MeetRequest>> onGetOutcomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequest>>() {
-
-        @Override
-        public void onSuccess(List<MeetRequest> items) {
-            MemCache.clearAndAddOutcomeRequests(items);
-            outcomeRequestsFragment.loadItems(items);
-            outcomeRequestsFragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-            outcomeRequestsFragment.setRefreshing(false);
-        }
-    };
-
-    private Api.OnSmthGetListener<List<MeetRequest>> onGetIncomeRequestsListener = new Api.OnSmthGetListener<List<MeetRequest>>() {
-
-        @Override
-        public void onSuccess(List<MeetRequest> items) {
-            MemCache.clearAndAddIncomeRequests(items);
-            incomeRequestsFragment.loadItems(items);
-            incomeRequestsFragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-            incomeRequestsFragment.setRefreshing(false);
-        }
-    };
 
     private Pusher.PushListener pushListener = new Pusher.PushListener() {
         @Override
@@ -144,20 +107,13 @@ public class MainActivity extends AppCompatActivity {
         checkAuthorization();
         //getApplicationContext().deleteDatabase("AroundYouDB.db");
 
-        neighbourFragment = getPreparedNeighbourFragment();
-        if (neighboursHandler != null) {
-            neighboursHandler.unregister();
-        };
-
-        if (neighboursHandlerDB != null) {
-            neighboursHandlerDB.unregister();
-        }
+        neighbourFragment = new NeighbourFragment();
 
         Pusher.getInstance().subscribe(pushListener);
 
         mapFragment = getPreparedMapFragment();
-        outcomeRequestsFragment = getPreparedOutcomeRequestsFragment();
-        incomeRequestsFragment = getPreparedIncomeRequestsFragment();
+        outcomeRequestsFragment = new OutcomeMeetRequestFragment();
+        incomeRequestsFragment = new IncomeMeetRequestFragment();
         userFragment = new UserFragment();
         selectFragment(incomeRequestsFragment);
 
@@ -171,23 +127,6 @@ public class MainActivity extends AppCompatActivity {
         });
         nav.setSelectedItemId(R.id.action_neighbours);
         //nav.setSelectedItemId(R.id.action_income_requests);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (neighboursHandler != null) {
-            neighboursHandler.unregister();
-        }
-
-        if (neighboursHandlerDB != null) {
-            neighboursHandlerDB.unregister();
-        }
-
-        Pusher.getInstance().unSubscribe();
-        if (userHandler != null) {
-            userHandler.unregister();
-        }
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
@@ -221,32 +160,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Api.getInstance().setToken(jwt);
         }
-    }
-
-    private MeetRequestFragment getPreparedIncomeRequestsFragment() {
-        if (incomeRequestsFragment != null) {
-            return incomeRequestsFragment;
-        }
-        MeetRequestFragment fragment = new IncomeMeetRequestFragment();
-        fragment.setListener(onGetIncomeRequestsListener);
-        return fragment;
-    }
-
-    private MeetRequestFragment getPreparedOutcomeRequestsFragment() {
-        if (outcomeRequestsFragment != null) {
-            return outcomeRequestsFragment;
-        }
-
-        MeetRequestFragment fragment = new OutcomeMeetRequestFragment();
-        fragment.setListener(onGetOutcomeRequestsListener);
-        return fragment;
-    }
-
-    private NeighbourFragment getPreparedNeighbourFragment() {
-        if (neighbourFragment != null) {
-            return neighbourFragment;
-        }
-        return new NeighbourFragment();
     }
 
     private MapFragment getPreparedMapFragment() {
