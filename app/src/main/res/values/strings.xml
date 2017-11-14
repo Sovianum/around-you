@@ -49,4 +49,8 @@
     <string name="interrupted_str">Ваш собеседник прервал отслеживание</string>
     <string name="logout_str">Выйти</string>
     <string name="failed_to_authorize_str">Неверная пара логин/пароль</string>
+    <string name="response_code_template">Response code is %d</string>
+    <string name="connection_lost_str">Нет сети</string>
+    <string name="out_of_range_str">Пользователь вне зоны доступа</string>
+    <string name="server_internal_error_str">Сервер упал</string>
 </resources>

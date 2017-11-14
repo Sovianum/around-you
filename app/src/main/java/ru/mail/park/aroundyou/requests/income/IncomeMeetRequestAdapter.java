@@ -2,63 +2,21 @@ package ru.mail.park.aroundyou.requests.income;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
-import ru.mail.park.aroundyou.datasource.network.Api;
-import ru.mail.park.aroundyou.common.ListenerHandler;
-import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
-import ru.mail.park.aroundyou.model.MeetRequestUpdate;
-import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 import ru.mail.park.aroundyou.model.MeetRequest;
-import ru.mail.park.aroundyou.tracking.Tracker;
-
-import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_ACCEPTED;
-import static ru.mail.park.aroundyou.model.MeetRequest.STATUS_DECLINED;
+import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 
 public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
-    public static final int HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
-
     public static final int CARD_ID = R.layout.item_income_request_card;
     private List<MeetRequest> items;
     private IncomeMeetRequestFragment fragment;
-    private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> acceptHandler;
-    private ListenerHandler<Api.OnSmthGetListener<MeetRequest>> declineHandler;
-
-    private Api.OnSmthGetListener<MeetRequest> acceptListener = new Api.OnSmthGetListener<MeetRequest>() {
-        @Override
-        public void onSuccess(MeetRequest payload) {
-            handleAcceptResponseCode(payload);
-            fragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            handleAcceptError(error);
-            fragment.setRefreshing(false);
-        }
-    };
-
-    private Api.OnSmthGetListener<MeetRequest> declineListener = new Api.OnSmthGetListener<MeetRequest>() {
-        @Override
-        public void onSuccess(MeetRequest payload) {
-            handleDeclineResponseCode(payload);
-            fragment.setRefreshing(false);
-        }
-
-        @Override
-        public void onError(Exception error) {
-            handleDeclineError(error);
-            fragment.setRefreshing(false);
-        }
-    };
 
     public IncomeMeetRequestAdapter(IncomeMeetRequestFragment fragment, List<MeetRequest> items) {
         this.items = items;
@@ -75,28 +33,22 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final MeetRequest item = items.get(position);
+        final MeetRequest request = items.get(position);
 
         IncomeMeetRequestAdapter.CardViewHolder cardHolder = (IncomeMeetRequestAdapter.CardViewHolder) holder;
-        cardHolder.requesterLoginView.setText(item.getRequesterLogin());
-        cardHolder.requesterAboutView.setText(item.getRequesterAbout());
+        cardHolder.requesterLoginView.setText(request.getRequesterLogin());
+        cardHolder.requesterAboutView.setText(request.getRequesterAbout());
         cardHolder.submitView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Tracker.getInstance(fragment.getContext()).isTracking()) {
-                    Toast.makeText(fragment.getContext(), R.string.stop_tracking_str, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                fragment.setRefreshing(true);
-                acceptHandler = updateMeetRequest(item.getId(), STATUS_ACCEPTED, acceptListener);
+                fragment.acceptRequest(request.getId());
             }
         });
 
         cardHolder.declineView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragment.setRefreshing(true);
-                declineHandler = updateMeetRequest(item.getId(), STATUS_DECLINED, declineListener);
+                fragment.declineRequest(request.getId());
             }
         });
     }
@@ -110,39 +62,6 @@ public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
     public void setItems(List<MeetRequest> items) {
         this.items = items;
         notifyDataSetChanged();
-    }
-
-    private ListenerHandler<Api.OnSmthGetListener<MeetRequest>>
-    updateMeetRequest(int id, String status, Api.OnSmthGetListener<MeetRequest> listener) {
-        return Api.getInstance().updateMeetRequest(
-                new MeetRequestUpdate(id, status),
-                listener
-        );
-    }
-
-    private void handleAcceptResponseCode(MeetRequest request) {
-        String message = fragment.getString(R.string.request_accepted_str);
-        Tracker.getInstance(fragment.getContext()).startTracking(request.getRequesterId());
-        Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
-    }
-
-    private void handleDeclineResponseCode(MeetRequest request) {
-        String message = fragment.getString(R.string.request_declined_str);
-        Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), message, Toast.LENGTH_LONG).show();
-    }
-
-    private void handleAcceptError(Exception error) {
-        Log.e(MainActivity.class.getName(), error.toString());
-
-        if (IncomeMeetRequestAdapter.this.fragment.getActivity() == null) {
-            return;
-        }
-        Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    private void handleDeclineError(Exception error) {
-        Log.e(MainActivity.class.getName(), error.toString());
-        Toast.makeText(IncomeMeetRequestAdapter.this.fragment.getActivity(), error.toString(), Toast.LENGTH_LONG).show();
     }
 
     class CardViewHolder extends RecyclerView.ViewHolder {

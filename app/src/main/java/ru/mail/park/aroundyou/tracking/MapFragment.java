@@ -30,6 +30,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.net.UnknownHostException;
+
 import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
@@ -50,6 +52,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
             @Override
             public void onError(Exception error) {
+                if (error instanceof UnknownHostException) {
+                    Toast.makeText(getContext(), R.string.connection_lost_str, Toast.LENGTH_SHORT).show();
+                }
                 Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
             }
         };

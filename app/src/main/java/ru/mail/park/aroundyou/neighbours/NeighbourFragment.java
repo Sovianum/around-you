@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,8 +25,12 @@ import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.User;
 
+import static java.net.HttpURLConnection.HTTP_CONFLICT;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_PRECON_FAILED;
+import static ru.mail.park.aroundyou.common.ServerInfo.HTTP_FAILED_DEPENDENCY;
 
 public class NeighbourFragment extends Fragment {
     private NeighbourAdapter adapter;
@@ -44,11 +49,20 @@ public class NeighbourFragment extends Fragment {
                 case HTTP_OK:
                     message = getString(R.string.request_created_str);
                     break;
+                case HTTP_CONFLICT:
+                    message = getString(R.string.request_exists_str);
+                    break;
+                case HTTP_FAILED_DEPENDENCY:
+                    message = getString(R.string.out_of_range_str);
+                    break;
                 case HTTP_FORBIDDEN:
                     message = getString(R.string.request_exists_str);
                     break;
+                case HTTP_INTERNAL_ERROR:
+                    message = getString(R.string.server_internal_error_str);
+                    break;
                 default:
-                    message = String.format(Locale.ENGLISH, "Response code is %d", code);
+                    message = String.format(Locale.ENGLISH, getString(R.string.response_code_template), code);
                     break;
             }
             Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
@@ -57,8 +71,10 @@ public class NeighbourFragment extends Fragment {
 
         @Override
         public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+            if (error instanceof UnknownHostException) {
+                Toast.makeText(getContext(), R.string.connection_lost_str, Toast.LENGTH_SHORT).show();
+            }
+            Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
             setRefreshing(false);
         }
     };
