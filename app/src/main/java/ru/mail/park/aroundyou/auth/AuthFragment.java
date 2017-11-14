@@ -13,6 +13,8 @@ public class AuthFragment extends Fragment {
             return;
         }
 
+        getActivity().getApplicationContext().deleteDatabase("AroundYouDB.db");
+
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(getActivity()).edit();
 

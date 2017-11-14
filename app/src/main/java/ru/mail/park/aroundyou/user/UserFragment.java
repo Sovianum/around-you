@@ -136,7 +136,6 @@ public class UserFragment extends Fragment {
         }
 
         DBApi.getInstance(getActivity()).insertUser(user);
-        DBApi.getInstance(getActivity()).setUserId(user.getId());
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(getActivity()).edit();
 
