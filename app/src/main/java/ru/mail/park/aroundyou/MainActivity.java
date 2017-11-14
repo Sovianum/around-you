@@ -19,14 +19,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
-import ru.mail.park.aroundyou.common.ListenerHandler;
+import ru.mail.park.aroundyou.common.PreferencesInfo;
 import ru.mail.park.aroundyou.datasource.network.Api;
-import ru.mail.park.aroundyou.datasource.DBApi;
-import ru.mail.park.aroundyou.datasource.MemCache;
-import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
-import ru.mail.park.aroundyou.model.User;
-import ru.mail.park.aroundyou.requests.MeetRequestFragment;
 import ru.mail.park.aroundyou.model.MeetRequest;
+import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
+import ru.mail.park.aroundyou.requests.MeetRequestFragment;
 import ru.mail.park.aroundyou.requests.Pusher;
 import ru.mail.park.aroundyou.requests.income.IncomeMeetRequestFragment;
 import ru.mail.park.aroundyou.requests.outcome.OutcomeMeetRequestFragment;
@@ -152,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkAuthorization() {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext());
-        String jwt = prefs.getString("jwt", null);
+        String jwt = prefs.getString(PreferencesInfo.JSON_WEB_TOKEN, null);
 
         if (jwt == null) {
             Intent intentAuth = new Intent(this, AuthActivity.class);
