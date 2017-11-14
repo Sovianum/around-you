@@ -1,10 +1,19 @@
 package ru.mail.park.aroundyou;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,13 +24,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import ru.mail.park.aroundyou.auth.AuthActivity;
+import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.common.PreferencesInfo;
 import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.model.MeetRequest;
+import ru.mail.park.aroundyou.model.Position;
 import ru.mail.park.aroundyou.neighbours.NeighbourFragment;
 import ru.mail.park.aroundyou.requests.MeetRequestFragment;
 import ru.mail.park.aroundyou.requests.Pusher;
@@ -96,13 +109,46 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private LocationListener onSelfLocationChangeListener = new LocationListener() {
+        ListenerHandler<Api.OnSmthGetListener<Integer>> positionHandler;
+        Api.OnSmthGetListener<Integer> savePositionListener = new Api.OnSmthGetListener<Integer>() {
+            @Override
+            public void onSuccess(Integer payload) {
+                Log.d(MapFragment.class.getName(), "position successfully saved");
+            }
+
+            @Override
+            public void onError(Exception error) {
+                if (error instanceof UnknownHostException) {
+                    Toast.makeText(MainActivity.this, R.string.connection_lost_str, Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            }
+        };
+
+        @Override
+        public void onLocationChanged(final Location location) {
+            Position position = new Position(location.getLatitude(), location.getLongitude());
+            positionHandler = Api.getInstance().savePosition(position, savePositionListener);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+        @Override
+        public void onProviderEnabled(String provider) {}
+
+        @Override
+        public void onProviderDisabled(String provider) {}
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
         setContentView(R.layout.activity_main);
 
         checkAuthorization();
-        //getApplicationContext().deleteDatabase("AroundYouDB.db");
+        startPositionTracking();
 
         neighbourFragment = new NeighbourFragment();
 
@@ -122,8 +168,20 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        nav.setSelectedItemId(R.id.action_neighbours);
-        //nav.setSelectedItemId(R.id.action_income_requests);
+        nav.setSelectedItemId(R.id.action_profile);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, R.string.can_not_meet_str, Toast.LENGTH_LONG).show();
+                    selectFragment(userFragment);
+                }
+            }
+        }
     }
 
     private void handleNavigationItemSelected(@NonNull MenuItem item) {
@@ -185,5 +243,31 @@ public class MainActivity extends AppCompatActivity {
         activeFragment = fragment;
         fragmentTransaction.add(R.id.fragment_container, activeFragment);
         fragmentTransaction.commit();
+    }
+
+    private boolean startPositionTracking() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION
+                );
+            }
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION
+                );
+            }
+        }
+        if (locationManager == null) {
+            return false;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, onSelfLocationChangeListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, onSelfLocationChangeListener);
+        return true;
     }
 }
