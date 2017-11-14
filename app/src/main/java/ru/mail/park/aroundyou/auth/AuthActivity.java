@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import ru.mail.park.aroundyou.common.PreferencesInfo;
 import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
@@ -108,7 +109,7 @@ public class AuthActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext()).edit();
 
-        editor.putString("jwt", token);
+        editor.putString(PreferencesInfo.JSON_WEB_TOKEN, token);
         editor.apply();
 
         Intent intent = new Intent(this, MainActivity.class);

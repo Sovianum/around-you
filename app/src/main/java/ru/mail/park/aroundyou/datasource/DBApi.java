@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +44,10 @@ public class DBApi {
     private static final String COLUMN_STATUS= "status";*/
 
     private static final String TABLE_NAME_USERS= "USERS";
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    private int selfUserId;
 
     private DBApi() {
 
@@ -127,6 +134,15 @@ public class DBApi {
         });
     }
 
+    public void insertUser(final User user) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                insertUserDB(user);
+            }
+        });
+    }
+
     private void insertUserDB(User neighbourItem) {
         insertNeighbourOrUserDB(neighbourItem, TABLE_NAME_USERS);
     }
@@ -154,7 +170,7 @@ public class DBApi {
 
                 Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_NEIGHBOURS + ";", null);
                 if (cursor == null) {
-                    listener.onError(new IOException("DB exception"));
+                    invokeError(handler, new IOException("DB exception"));
                 } else {
                     final List<User> result = new ArrayList<>();
                     try {
@@ -170,7 +186,7 @@ public class DBApi {
                     } finally {
                         cursor.close();
                     }
-                    listener.onSuccess(result);
+                    invokeSuccess(handler, result);
                 }
             }
         });
@@ -188,7 +204,7 @@ public class DBApi {
 
                 Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_USERS, null);
                 if (cursor == null) {
-                    listener.onError(new IOException("DB exception"));
+                    invokeError(handler, new IOException("DB exception"));
                 } else {
                     final List<User> result = new ArrayList<>();
                     try {
@@ -204,12 +220,17 @@ public class DBApi {
                     } finally {
                         cursor.close();
                     }
-                    listener.onSuccess(result);
+                    invokeSuccess(handler, result);
                 }
             }
         });
         return handler;
     }
+
+    //public ListenerHandler<OnDBDataGetListener<User>>
+    //getSelfUser(final OnDBDataGetListener<User> listener) {
+    //    return getUser(listener, selfUserId);
+    //}
 
     public ListenerHandler<OnDBDataGetListener<User>>
     getUser(final OnDBDataGetListener<User> listener, final int userId) {
@@ -222,7 +243,7 @@ public class DBApi {
                 Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME_USERS + " WHERE " + COLUMN_USER_ID + " = ?",
                         new String[] {String.valueOf(userId)});
                 if (cursor == null) {
-                    listener.onError(new IOException("DB exception"));
+                    invokeError(handler, new IOException("DB exception"));
                 } else {
                     User user = null;
                     try {
@@ -238,9 +259,9 @@ public class DBApi {
                         cursor.close();
                     }
                     if (user != null) {
-                        listener.onSuccess(user);
+                        invokeSuccess(handler, user);
                     } else {
-                        listener.onError(new IOException("There is no user in DB"));
+                        invokeError(handler, new IOException("There is no user in DB"));
                     }
                 }
             }
@@ -334,9 +355,45 @@ public class DBApi {
         });
     }
 
+    private <T> void
+    invokeSuccess(final ListenerHandler<OnDBDataGetListener<T>> handler, final T payload) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                OnDBDataGetListener<T> listener = handler.getListener();
+                if (listener != null) {
+                    Log.d("API", "listener NOT null in invokeSucces");
+                    listener.onSuccess(payload);
+                } else {
+                    Log.d("API", "listener is null");
+                }
+            }
+        });
+    }
+
+    private <T> void
+    invokeError(final ListenerHandler<OnDBDataGetListener<T>> handler, final Exception error) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                OnDBDataGetListener<T> listener = handler.getListener();
+                if (listener != null) {
+                    Log.d("API", "listener NOT null in invokeError");
+                    listener.onError(error);
+                } else {
+                    Log.d("API", "listener is null");
+                }
+            }
+        });
+    }
+
     public interface OnDBDataGetListener<T> {
         void onSuccess(final T items);
 
         void onError(final Exception error);
+    }
+
+    public void setUserId(int id) {
+        this.selfUserId = id;
     }
 }
