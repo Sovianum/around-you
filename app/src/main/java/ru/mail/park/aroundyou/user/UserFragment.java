@@ -11,8 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.net.UnknownHostException;
 
 import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
@@ -21,18 +24,28 @@ import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.common.PreferencesInfo;
 import ru.mail.park.aroundyou.datasource.DBApi;
 import ru.mail.park.aroundyou.datasource.network.Api;
+import ru.mail.park.aroundyou.datasource.network.NetworkError;
 import ru.mail.park.aroundyou.model.User;
+
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 public class UserFragment extends Fragment {
     private Button logoutButton;
     private TextView loginTxt;
     private TextView aboutTxt;
+    private ProgressBar progressBar;
 
     private User user;
+
+    private ListenerHandler<Api.OnSmthGetListener<User>> userSelfHandler;
+    private ListenerHandler<DBApi.OnDBDataGetListener<User>> userSelfHandlerDB;
+
     private DBApi.OnDBDataGetListener<User> userSelfListenerDB = new DBApi.OnDBDataGetListener<User>() {
         @Override
         public void onSuccess(User user) {
             setUser(user);
+            setRefreshing(false);
         }
 
         @Override
@@ -46,17 +59,41 @@ public class UserFragment extends Fragment {
         @Override
         public void onSuccess(User user) {
             setSelfUser(user);
+            setRefreshing(false);
         }
 
         @Override
         public void onError(Exception error) {
-            Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(UserFragment.this.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            Log.e(AuthActivity.class.getName(), error.toString());
+            if (getActivity() == null) {
+                return;
+            }
+
+            if (error instanceof NetworkError) {
+                NetworkError casted = (NetworkError) error;
+                int code = casted.getResponseCode();
+                switch (code) {
+                    case HTTP_NOT_FOUND: {
+                        Toast.makeText(getActivity(), R.string.user_not_found_str, Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    case HTTP_INTERNAL_ERROR: {
+                        Toast.makeText(getActivity(), R.string.server_internal_error_str, Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    default: {
+                        Toast.makeText(getActivity(), ((NetworkError) error).getErrMsg(), Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                }
+            } else if (error instanceof UnknownHostException){
+                Toast.makeText(getContext(), R.string.connection_lost_str, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+            }
+            setRefreshing(false);
         }
     };
-
-    private ListenerHandler<Api.OnSmthGetListener<User>> userSelfHandler;
-    private ListenerHandler<DBApi.OnDBDataGetListener<User>> userSelfHandlerDB;
 
     @Nullable
     @Override
@@ -71,19 +108,8 @@ public class UserFragment extends Fragment {
         });
         loginTxt = userPageView.findViewById(R.id.login_txt);
         aboutTxt = userPageView.findViewById(R.id.about_txt);
+        progressBar = userPageView.findViewById(R.id.progressBar);
         return userPageView;
-    }
-
-
-    private void setSelfUser(final User user) {
-        DBApi.getInstance(getActivity().getApplicationContext()).insertUser(user);
-        DBApi.getInstance(getActivity().getApplicationContext()).setUserId(user.getId());
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(getActivity().getApplicationContext()).edit();
-
-        editor.putInt(PreferencesInfo.USER_SELF_ID, user.getId());
-        editor.apply();
-        setUser(user);
     }
 
     @Override
@@ -104,7 +130,27 @@ public class UserFragment extends Fragment {
         }
     }
 
+    private void setSelfUser(final User user) {
+        if (getActivity() == null) {
+            return;
+        }
+
+        DBApi.getInstance(getActivity()).insertUser(user);
+        DBApi.getInstance(getActivity()).setUserId(user.getId());
+        SharedPreferences.Editor editor = PreferenceManager
+                .getDefaultSharedPreferences(getActivity()).edit();
+
+        editor.putInt(PreferencesInfo.USER_SELF_ID, user.getId());
+        editor.apply();
+        setUser(user);
+    }
+
     private void loadUser() {
+        if (getActivity() == null) {
+            return;
+        }
+        setRefreshing(true);
+
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(getActivity().getApplicationContext());
         int userSelfId  = prefs.getInt(PreferencesInfo.USER_SELF_ID, 0);
@@ -120,6 +166,10 @@ public class UserFragment extends Fragment {
 
     public void setUser(final User user) {
         this.user = user;
+
+        if (getActivity() == null) {
+            return;
+        }
         loginTxt.setText(user.getLogin());
         aboutTxt.setText(user.getAbout());
 
@@ -132,5 +182,13 @@ public class UserFragment extends Fragment {
 
         Intent intentAuth = new Intent(getActivity(), AuthActivity.class);
         startActivity(intentAuth);
+    }
+
+    private void setRefreshing(boolean refreshing) {
+        if (refreshing) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }
