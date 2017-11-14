@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.mail.park.aroundyou.MainActivity;
@@ -24,6 +25,9 @@ import ru.mail.park.aroundyou.model.User;
 
 public class UserFragment extends Fragment {
     private Button logoutButton;
+    private TextView loginTxt;
+    private TextView aboutTxt;
+
     private User user;
     private DBApi.OnDBDataGetListener<User> userSelfListenerDB = new DBApi.OnDBDataGetListener<User>() {
         @Override
@@ -65,6 +69,8 @@ public class UserFragment extends Fragment {
                 logout();
             }
         });
+        loginTxt = userPageView.findViewById(R.id.login_txt);
+        aboutTxt = userPageView.findViewById(R.id.about_txt);
         return userPageView;
     }
 
@@ -114,6 +120,9 @@ public class UserFragment extends Fragment {
 
     public void setUser(final User user) {
         this.user = user;
+        loginTxt.setText(user.getLogin());
+        aboutTxt.setText(user.getAbout());
+
     }
 
     private void logout() {
