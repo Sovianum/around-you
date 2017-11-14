@@ -109,7 +109,8 @@ public class RegistrationFragment extends AuthFragment {
                 userStub.setAbout(aboutText.getText().toString());
                 userStub.setSex(((TextView)spinner.getSelectedView()).getText().toString());
 
-                int age = Integer.parseInt(ageText.getText().toString());
+                int age = !ageText.getText().toString().isEmpty() ?
+                        Integer.parseInt(ageText.getText().toString()) : 0;
                 userStub.setAge(age);
 
                 setLoading(true);
