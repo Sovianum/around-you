@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -245,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private boolean startPositionTracking() {
+    private void startPositionTracking() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -264,10 +263,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (locationManager == null) {
-            return false;
+            return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, onSelfLocationChangeListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, onSelfLocationChangeListener);
-        return true;
     }
 }

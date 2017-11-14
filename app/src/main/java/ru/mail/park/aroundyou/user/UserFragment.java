@@ -178,6 +178,7 @@ public class UserFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
         prefs.edit().clear().apply();
+        DBApi.getInstance(getActivity().getApplicationContext()).cleanDB();
 
         Intent intentAuth = new Intent(getActivity(), AuthActivity.class);
         startActivity(intentAuth);
