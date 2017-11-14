@@ -81,8 +81,13 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private Marker destMarker;
 
     private Tracker.PositionListener positionListener = new Tracker.PositionListener() {
+        private boolean fitted = true;
         @Override
         public void onPositionChange(Position.Point point) {
+            if (!fitted) {
+                fitCamera();
+                fitted = false;
+            }
             setDestMarker(new LatLng(point.getX(), point.getY()));
         }
     };
