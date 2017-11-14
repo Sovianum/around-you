@@ -3,6 +3,7 @@ package ru.mail.park.aroundyou.auth;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,22 +12,71 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.net.UnknownHostException;
+import java.util.Locale;
 
 import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
+import ru.mail.park.aroundyou.datasource.network.NetworkError;
 import ru.mail.park.aroundyou.model.ServerResponse;
 import ru.mail.park.aroundyou.model.User;
 
-public class LoginFragment extends Fragment {
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+
+public class LoginFragment extends AuthFragment {
     private EditText loginText;
     private EditText passwordText;
     private Button loginButton;
     private ProgressBar progressBar;
     private TextView linkToRegister;
     private View.OnClickListener onClickListener;
-    private Api.OnSmthGetListener<ServerResponse<String>> onDataGetListener;
     private ListenerHandler<Api.OnSmthGetListener<ServerResponse<String>>> handler;
+
+    private Api.OnSmthGetListener<ServerResponse<String>> onDataGetListener = new Api.OnSmthGetListener<ServerResponse<String>>() {
+        @Override
+        public void onSuccess(ServerResponse<String> response) {
+            if (response.getData() != null) {
+                onGettingToken(response.getData());
+            }
+            setLoading(false);
+        }
+
+        @Override
+        public void onError(Exception error) {
+            Log.e(AuthActivity.class.getName(), error.toString());
+            if (getActivity() == null) {
+                return;
+            }
+
+            if (error instanceof NetworkError) {
+                NetworkError casted = (NetworkError) error;
+                int code = casted.getResponseCode();
+                switch (code) {
+                    case HTTP_NOT_FOUND: {
+                        Toast.makeText(getActivity(), R.string.failed_to_authorize_str, Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    case HTTP_INTERNAL_ERROR: {
+                        Toast.makeText(getActivity(), R.string.server_internal_error_str, Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    default: {
+                        Toast.makeText(getActivity(), ((NetworkError) error).getErrMsg(), Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                }
+            } else if (error instanceof UnknownHostException){
+                Toast.makeText(getContext(), R.string.connection_lost_str, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+            }
+            setLoading(false);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +104,14 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        if (handler != null) {
+            handler.unregister();
+        }
+        super.onStop();
+    }
+
     public void setLoading(boolean loading) {
         if (loading) {
             progressBar.setVisibility(View.VISIBLE);
@@ -64,13 +122,5 @@ public class LoginFragment extends Fragment {
 
     public void setOnClickListener(View.OnClickListener listener) {
         this.onClickListener = listener;
-    }
-
-    public void setOnDataGetListener(Api.OnSmthGetListener<ServerResponse<String>> listener) {
-        this.onDataGetListener = listener;
-    }
-
-    public void setHandler(ListenerHandler<Api.OnSmthGetListener<ServerResponse<String>>> handler) {
-        this.handler = handler;
     }
 }

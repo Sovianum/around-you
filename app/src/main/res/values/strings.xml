@@ -53,4 +53,5 @@
     <string name="connection_lost_str">Нет сети</string>
     <string name="out_of_range_str">Пользователь вне зоны доступа</string>
     <string name="server_internal_error_str">Сервер упал</string>
+    <string name="duplicate_user_str">Пользовтель с таким именем уже существует</string>
 </resources>

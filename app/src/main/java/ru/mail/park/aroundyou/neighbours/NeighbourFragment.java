@@ -70,6 +70,8 @@ public class NeighbourFragment extends Fragment {
             Log.e(MainActivity.class.getName(), error.toString());
             if (error instanceof NetworkError) {
                 Toast.makeText(getContext(), ((NetworkError) error).getErrMsg(), Toast.LENGTH_LONG).show();
+            } else if (error instanceof UnknownHostException) {
+                Toast.makeText(getContext(), R.string.connection_lost_str, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
             }
