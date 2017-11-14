@@ -23,6 +23,7 @@ import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.datasource.DBApi;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
+import ru.mail.park.aroundyou.datasource.network.NetworkError;
 import ru.mail.park.aroundyou.model.User;
 
 import static java.net.HttpURLConnection.HTTP_CONFLICT;
@@ -67,7 +68,11 @@ public class NeighbourFragment extends Fragment {
         @Override
         public void onError(Exception error) {
             Log.e(MainActivity.class.getName(), error.toString());
-            Toast.makeText(NeighbourFragment.this.getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            if (error instanceof NetworkError) {
+                Toast.makeText(getContext(), ((NetworkError) error).getErrMsg(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
+            }
             setRefreshing(false);
         }
     };

@@ -53,13 +53,19 @@ public class Tracker {
                 if (positionListener != null) {
                     positionListener.onPositionChange(pos.getPoint());
                 }
-                Api.getInstance().getNeighbourPosition(currId, this);
+                if (positionHandler != null) {
+                    positionHandler.unregister();
+                }
+                positionHandler = Api.getInstance().getNeighbourPosition(currId, this);
             }
 
             @Override
             public void onError(Exception error) {
                 Log.e(MainActivity.class.getName(), error.toString());
-                Api.getInstance().getNeighbourPosition(currId, this);
+                if (positionHandler != null) {
+                    positionHandler.unregister();
+                }
+                positionHandler = Api.getInstance().getNeighbourPosition(currId, this);
             }
         };
         positionHandler = Api.getInstance().getNeighbourPosition(id, onPositionChangeListener);
