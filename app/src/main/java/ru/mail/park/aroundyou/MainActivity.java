@@ -103,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
         checkAuthorization();
         //getApplicationContext().deleteDatabase("AroundYouDB.db");
+        //SharedPreferences.Editor editor = PreferenceManager
+        //        .getDefaultSharedPreferences(this).edit();
+
+        //editor.putInt(PreferencesInfo.USER_SELF_ID, 0);
+        //editor.apply();
 
         neighbourFragment = new NeighbourFragment();
 
@@ -185,5 +190,12 @@ public class MainActivity extends AppCompatActivity {
         activeFragment = fragment;
         fragmentTransaction.add(R.id.fragment_container, activeFragment);
         fragmentTransaction.commit();
+    }
+
+    private void clearStorageForDebug() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        prefs.edit().clear().apply();
+        getApplicationContext().deleteDatabase("AroundYouDB.db");
     }
 }

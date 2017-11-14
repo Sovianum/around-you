@@ -247,18 +247,31 @@ public class DBApi {
         return handler;
     }
 
+    public void cleanDB() {
+        cleanNeighbours();
+        cleanUsers();
+    }
+
     public void cleanNeighbours() {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                cleanDB(TABLE_NAME_NEIGHBOURS);
+                cleanTable(TABLE_NAME_NEIGHBOURS);
             }
         });
     }
 
-    public void cleanDB(String tableName) {
-        checkInitialized();
+    public void cleanUsers() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                cleanTable(TABLE_NAME_USERS);
+            }
+        });
+    }
 
+    public void cleanTable(String tableName) {
+        checkInitialized();
         database.execSQL("DELETE FROM " + tableName);
     }
 
@@ -317,5 +330,13 @@ public class DBApi {
         void onSuccess(final T items);
 
         void onError(final Exception error);
+    }
+
+    public void deleteDB() {
+        if (database == null || context == null) {
+            return;
+        }
+        context.deleteDatabase(DB_NAME);
+        database = null;
     }
 }
