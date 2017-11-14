@@ -14,11 +14,11 @@ import ru.mail.park.aroundyou.model.MeetRequest;
 import ru.mail.park.aroundyou.requests.MeetRequestAdapter;
 
 public class IncomeMeetRequestAdapter extends MeetRequestAdapter {
-    public static final int CARD_ID = R.layout.item_income_request_card;
+    private static final int CARD_ID = R.layout.item_income_request_card;
     private List<MeetRequest> items;
     private IncomeMeetRequestFragment fragment;
 
-    public IncomeMeetRequestAdapter(IncomeMeetRequestFragment fragment, List<MeetRequest> items) {
+    IncomeMeetRequestAdapter(IncomeMeetRequestFragment fragment, List<MeetRequest> items) {
         this.items = items;
         this.fragment = fragment;
         notifyDataSetChanged();

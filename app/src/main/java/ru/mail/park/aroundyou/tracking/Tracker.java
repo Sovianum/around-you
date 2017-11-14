@@ -1,18 +1,17 @@
 package ru.mail.park.aroundyou.tracking;
 
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import ru.mail.park.aroundyou.datasource.network.Api;
-import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.MainActivity;
+import ru.mail.park.aroundyou.common.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.model.Position;
 
 public class Tracker {
+    @SuppressLint("StaticFieldLeak")
     private static Tracker instance = new Tracker();
     private Context context;
     private ListenerHandler<Api.OnSmthGetListener<Position>> positionHandler;
@@ -27,16 +26,12 @@ public class Tracker {
         return instance;
     }
 
-    public void subscribe(PositionListener listener) {
+    void subscribe(PositionListener listener) {
         positionListener = listener;
     }
 
-    public void unSubscribe() {
+    void unSubscribe() {
         positionListener = null;
-    }
-
-    public int getCurrId() {
-        return currId;
     }
 
     public void startTracking(final int id) {
@@ -81,20 +76,6 @@ public class Tracker {
     }
 
     private Tracker() {}
-
-    private boolean checkPermissions() {
-        boolean permissionsGranted = isPermissionGranted(
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-        );
-        permissionsGranted &= isPermissionGranted(
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-        );
-        return permissionsGranted;
-    }
-
-    private boolean isPermissionGranted(int permission) {
-        return permission == PackageManager.PERMISSION_GRANTED;
-    }
 
     public interface PositionListener {
         void onPositionChange(Position.Point point);

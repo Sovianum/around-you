@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.datasource.MemCache;

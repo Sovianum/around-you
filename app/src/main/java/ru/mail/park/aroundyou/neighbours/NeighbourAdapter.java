@@ -2,27 +2,18 @@ package ru.mail.park.aroundyou.neighbours;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
-import ru.mail.park.aroundyou.datasource.network.Api;
-import ru.mail.park.aroundyou.common.ListenerHandler;
-import ru.mail.park.aroundyou.MainActivity;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.User;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_OK;
-
 public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public static int CARD_ID = R.layout.item_neighbour_card;
     private List<User> items;
     private NeighbourFragment fragment;
 
@@ -33,7 +24,7 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         TextView expanderView;
         int defaultMaxLines;
 
-        public CardViewHolder(final View itemView) {
+        CardViewHolder(final View itemView) {
             super(itemView);
             loginView = itemView.findViewById(R.id.login_txt);
             aboutView = itemView.findViewById(R.id.about_txt);
@@ -43,7 +34,7 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public NeighbourAdapter(NeighbourFragment fragment, List<User> items) {
+    NeighbourAdapter(NeighbourFragment fragment, List<User> items) {
         this.fragment = fragment;
         this.items = items;
         notifyDataSetChanged();
@@ -57,6 +48,7 @@ public class NeighbourAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
+        int CARD_ID = R.layout.item_neighbour_card;
         View view = LayoutInflater.from(context).inflate(CARD_ID, parent, false);
         return new CardViewHolder(view);
     }

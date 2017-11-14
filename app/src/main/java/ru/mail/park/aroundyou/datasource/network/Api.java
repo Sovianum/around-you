@@ -31,6 +31,8 @@ import ru.mail.park.aroundyou.model.User;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class Api {
+    public static final String TEXT_PLAIN = "text/plain";
+
     private static final Api INSTANCE = new Api();
     private static final Gson GSON = new GsonBuilder().create();
     private final Executor executor = Executors.newSingleThreadExecutor();
@@ -232,7 +234,7 @@ public class Api {
                 try {
                     final String strRequestBody = GSON.toJson(user);
                     RequestBody requestBody =
-                            RequestBody.create(MediaType.parse("text/plain"), strRequestBody);
+                            RequestBody.create(MediaType.parse(TEXT_PLAIN), strRequestBody);
                     final Response<ServerResponse<String>> response = service.loginUser(requestBody).execute();
 
                     final ServerResponse<String> body = response.body();
@@ -260,7 +262,7 @@ public class Api {
                 try {
                     final String strRequestBody = GSON.toJson(user);
                     RequestBody requestBody =
-                            RequestBody.create(MediaType.parse("text/plain"), strRequestBody);
+                            RequestBody.create(MediaType.parse(TEXT_PLAIN), strRequestBody);
                     final Response<ServerResponse<String>> response = service.registerUser(requestBody).execute();
 
                     final ServerResponse<String> body = response.body();

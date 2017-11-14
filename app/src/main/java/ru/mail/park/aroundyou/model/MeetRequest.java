@@ -72,16 +72,8 @@ public class MeetRequest {
         return requesterId;
     }
 
-    public void setRequesterId(int requesterId) {
-        this.requesterId = requesterId;
-    }
-
     public int getRequestedId() {
         return requestedId;
-    }
-
-    public void setRequestedId(int requestedId) {
-        this.requestedId = requestedId;
     }
 
     public Timestamp getTime() {
@@ -96,7 +88,4 @@ public class MeetRequest {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

@@ -14,10 +14,6 @@ public class ServerResponse<T> {
         return errMsg;
     }
 
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
-    }
-
     public T getData() {
         return data;
     }

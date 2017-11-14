@@ -194,7 +194,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         return null;
     }
 
-    @NonNull
     private void prepareButtonLayout(LayoutInflater layoutInflater, ViewGroup viewGroup) {
         View relativeLayout1 = layoutInflater.inflate(
                 R.layout.map_button_layout,
@@ -249,15 +248,4 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         map.moveCamera(moveUpdate);
     }
 
-    private Location getLastLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION
-                );
-            }
-        }
-        return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-    }
 }

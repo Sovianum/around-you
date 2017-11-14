@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Locale;
 
 import ru.mail.park.aroundyou.MainActivity;
-import ru.mail.park.aroundyou.datasource.network.Api;
-import ru.mail.park.aroundyou.datasource.DBApi;
-import ru.mail.park.aroundyou.common.ListenerHandler;
 import ru.mail.park.aroundyou.R;
+import ru.mail.park.aroundyou.common.ListenerHandler;
+import ru.mail.park.aroundyou.datasource.DBApi;
+import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.datasource.network.NetworkError;
 import ru.mail.park.aroundyou.model.User;
 
@@ -30,7 +30,6 @@ import static java.net.HttpURLConnection.HTTP_CONFLICT;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_PRECON_FAILED;
 import static ru.mail.park.aroundyou.common.ServerInfo.HTTP_FAILED_DEPENDENCY;
 
 public class NeighbourFragment extends Fragment {
@@ -182,19 +181,6 @@ public class NeighbourFragment extends Fragment {
     private void refreshItems() {
         DBApi.getInstance(getActivity().getApplicationContext()).getNeighbours(onNeighboursGetListenerDB);
         neighboursHandler = Api.getInstance().getNeighbours(onNeighboursGetListener);
-    }
-
-    private void refreshCachedItems() {
-        DBApi.getInstance(getActivity().getApplicationContext()).getNeighbours(onNeighboursGetListenerDB);
-    }
-
-    private void onItemsLoadComplete() {
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
     }
 
     private void cacheNeighbours(List<User> neighbourItems) {

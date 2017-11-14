@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
-import ru.mail.park.aroundyou.datasource.network.Api;
 import ru.mail.park.aroundyou.R;
 import ru.mail.park.aroundyou.model.MeetRequest;
 
@@ -65,12 +64,4 @@ abstract public class MeetRequestFragment extends Fragment {
 
     abstract protected void refreshItems();
 
-    private void onItemsLoadComplete() {
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-    }
 }

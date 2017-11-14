@@ -252,7 +252,7 @@ public class DBApi {
         cleanUsers();
     }
 
-    public void cleanNeighbours() {
+    private void cleanNeighbours() {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -261,7 +261,7 @@ public class DBApi {
         });
     }
 
-    public void cleanUsers() {
+    private void cleanUsers() {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -270,7 +270,7 @@ public class DBApi {
         });
     }
 
-    public void cleanTable(String tableName) {
+    private void cleanTable(String tableName) {
         checkInitialized();
         database.execSQL("DELETE FROM " + tableName);
     }
